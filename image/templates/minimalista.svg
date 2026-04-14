@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Template minimalista">
+  <rect width="900" height="1200" fill="#ffffff"/>
+  <rect x="60" y="60" width="780" height="2" fill="#b8c7d8"/>
+  <rect x="60" y="120" width="780" height="120" fill="#f7f9fb"/>
+  <rect x="60" y="280" width="780" height="2" fill="#d3dfe9"/>
+  <rect x="60" y="330" width="360" height="730" fill="#fafbfd"/>
+  <rect x="480" y="330" width="360" height="730" fill="#fafbfd"/>
+  <rect x="60" y="1090" width="780" height="2" fill="#b8c7d8"/>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "name": "aureavertex/platform",
+  "description": "Plataforma MVCL para criacao e exportacao de curriculos profissionais.",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "dompdf/dompdf": "^3.0"
+  }
+}

@@ -1,0 +1,248 @@
+<?php
+declare(strict_types=1);
+
+namespace AureaVertex\Catalog\Controller\Resume;
+
+use AureaVertex\Catalog\Model\ResumeModel;
+use AureaVertex\Catalog\Model\TemplateModel;
+use AureaVertex\System\Engine\Controller;
+
+class ResumeController extends Controller
+{
+    public function create(): string
+    {
+        $this->ensureAuth();
+
+        $resumeModel = new ResumeModel($this->registry);
+        $templateModel = new TemplateModel($this->registry);
+        $templates = $templateModel->getActiveTemplates();
+
+        $form = $this->defaultForm();
+        $requestedTemplateId = (int) $this->request->get('template_id', 0);
+
+        if ($requestedTemplateId > 0 && $this->templateExists($templates, $requestedTemplateId)) {
+            $form['template_id'] = (string) $requestedTemplateId;
+        }
+
+        if ($this->request->isPost()) {
+            if (!$this->validateCsrfToken()) {
+                $this->flash('error', 'Token de segurança inválido.');
+                $this->redirect('catalog/index.php?route=resume/create');
+            }
+
+            $form = $this->mapForm($this->request->allPost());
+
+            if (trim($form['title']) === '') {
+                return $this->page('resume/form', [
+                    'mode' => 'create',
+                    'error' => 'Informe um título para o currículo.',
+                    'form' => $form,
+                    'templates' => $templates,
+                ]);
+            }
+
+            $resumeId = $resumeModel->save((int) $this->auth->id(), $form, null);
+            $this->flash('success', 'Currículo criado com sucesso.');
+            $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
+        }
+
+        return $this->page('resume/form', [
+            'mode' => 'create',
+            'error' => '',
+            'form' => $form,
+            'templates' => $templates,
+        ]);
+    }
+
+    public function edit(string $id): string
+    {
+        $this->ensureAuth();
+
+        $resumeId = (int) $id;
+        $resumeModel = new ResumeModel($this->registry);
+        $templateModel = new TemplateModel($this->registry);
+
+        $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
+
+        if ($resume === null) {
+            $this->flash('error', 'Currículo não encontrado.');
+            $this->redirect('catalog/index.php?route=dashboard');
+        }
+
+        $form = $this->mapResumeToForm($resume);
+
+        if ($this->request->isPost()) {
+            if (!$this->validateCsrfToken()) {
+                $this->flash('error', 'Token de segurança inválido.');
+                $this->redirect('catalog/index.php?route=resume/edit/' . $resumeId);
+            }
+
+            $form = $this->mapForm($this->request->allPost());
+
+            if (trim($form['title']) === '') {
+                return $this->page('resume/form', [
+                    'mode' => 'edit',
+                    'resume_id' => $resumeId,
+                    'error' => 'Informe um título para o currículo.',
+                    'form' => $form,
+                    'templates' => $templateModel->getActiveTemplates(),
+                ]);
+            }
+
+            $resumeModel->save((int) $this->auth->id(), $form, $resumeId);
+            $this->flash('success', 'Currículo atualizado.');
+            $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
+        }
+
+        return $this->page('resume/form', [
+            'mode' => 'edit',
+            'resume_id' => $resumeId,
+            'error' => '',
+            'form' => $form,
+            'templates' => $templateModel->getActiveTemplates(),
+        ]);
+    }
+
+    public function view(string $id): string
+    {
+        $this->ensureAuth();
+
+        $resumeId = (int) $id;
+        $resumeModel = new ResumeModel($this->registry);
+        $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
+
+        if ($resume === null) {
+            $this->flash('error', 'Currículo não encontrado.');
+            $this->redirect('catalog/index.php?route=dashboard');
+        }
+
+        return $this->page('resume/view', [
+            'resume' => $resume,
+        ]);
+    }
+
+    public function delete(string $id): never
+    {
+        $this->ensureAuth();
+
+        if (!$this->request->isPost() || !$this->validateCsrfToken()) {
+            $this->flash('error', 'Requisição inválida para exclusão de currículo.');
+            $this->redirect('catalog/index.php?route=dashboard');
+        }
+
+        $resumeId = (int) $id;
+        $resumeModel = new ResumeModel($this->registry);
+        $resumeModel->delete($resumeId, (int) $this->auth->id());
+
+        $this->flash('success', 'Currículo removido.');
+        $this->redirect('catalog/index.php?route=dashboard');
+    }
+
+    private function ensureAuth(): void
+    {
+        if (!$this->auth->check()) {
+            $this->flash('error', 'Faça login para acessar seus currículos.');
+            $this->redirect('catalog/index.php?route=login');
+        }
+    }
+
+    private function defaultForm(): array
+    {
+        return [
+            'title' => '',
+            'template_id' => '',
+            'status' => 'draft',
+            'font_size' => '11',
+            'accent_color' => '#0a66c2',
+            'header_bg_color' => '#f3f8fd',
+            'text_color' => '#1f2937',
+            'personal_data' => '',
+            'objective' => '',
+            'professional_summary' => '',
+            'experiences_raw' => '',
+            'educations_raw' => '',
+            'courses_raw' => '',
+            'skills_raw' => '',
+            'languages_raw' => '',
+            'certifications_raw' => '',
+            'projects_raw' => '',
+            'links_raw' => '',
+        ];
+    }
+
+    private function mapForm(array $input): array
+    {
+        return [
+            'title' => (string) ($input['title'] ?? ''),
+            'template_id' => (string) ($input['template_id'] ?? ''),
+            'status' => (string) ($input['status'] ?? 'draft'),
+            'font_size' => (string) ($input['font_size'] ?? '11'),
+            'accent_color' => (string) ($input['accent_color'] ?? '#0a66c2'),
+            'header_bg_color' => (string) ($input['header_bg_color'] ?? '#f3f8fd'),
+            'text_color' => (string) ($input['text_color'] ?? '#1f2937'),
+            'personal_data' => (string) ($input['personal_data'] ?? ''),
+            'objective' => (string) ($input['objective'] ?? ''),
+            'professional_summary' => (string) ($input['professional_summary'] ?? ''),
+            'experiences_raw' => (string) ($input['experiences_raw'] ?? ''),
+            'educations_raw' => (string) ($input['educations_raw'] ?? ''),
+            'courses_raw' => (string) ($input['courses_raw'] ?? ''),
+            'skills_raw' => (string) ($input['skills_raw'] ?? ''),
+            'languages_raw' => (string) ($input['languages_raw'] ?? ''),
+            'certifications_raw' => (string) ($input['certifications_raw'] ?? ''),
+            'projects_raw' => (string) ($input['projects_raw'] ?? ''),
+            'links_raw' => (string) ($input['links_raw'] ?? ''),
+        ];
+    }
+
+    private function mapResumeToForm(array $resume): array
+    {
+        $designOptions = is_array($resume['design_options'] ?? null) ? $resume['design_options'] : [];
+
+        return [
+            'title' => (string) ($resume['title'] ?? ''),
+            'template_id' => (string) ($resume['template_id'] ?? ''),
+            'status' => (string) ($resume['status'] ?? 'draft'),
+            'font_size' => (string) ($designOptions['font_size'] ?? '11'),
+            'accent_color' => (string) ($designOptions['accent_color'] ?? '#0a66c2'),
+            'header_bg_color' => (string) ($designOptions['header_bg_color'] ?? '#f3f8fd'),
+            'text_color' => (string) ($designOptions['text_color'] ?? '#1f2937'),
+            'personal_data' => (string) ($resume['personal_data'] ?? ''),
+            'objective' => (string) ($resume['objective'] ?? ''),
+            'professional_summary' => (string) ($resume['professional_summary'] ?? ''),
+            'experiences_raw' => $this->rowsToRaw($resume['experiences'] ?? [], ['company', 'role', 'start_period', 'end_period', 'description']),
+            'educations_raw' => $this->rowsToRaw($resume['educations'] ?? [], ['institution', 'degree', 'start_period', 'end_period', 'description']),
+            'courses_raw' => $this->rowsToRaw($resume['courses'] ?? [], ['name', 'institution', 'completion_year']),
+            'skills_raw' => $this->rowsToRaw($resume['skills'] ?? [], ['skill', 'level']),
+            'languages_raw' => $this->rowsToRaw($resume['languages'] ?? [], ['language', 'level']),
+            'certifications_raw' => $this->rowsToRaw($resume['certifications'] ?? [], ['title', 'issuer', 'issue_year']),
+            'projects_raw' => $this->rowsToRaw($resume['projects'] ?? [], ['name', 'role', 'project_link', 'description']),
+            'links_raw' => $this->rowsToRaw($resume['links'] ?? [], ['label', 'url']),
+        ];
+    }
+
+    private function rowsToRaw(array $rows, array $keys): string
+    {
+        $lines = [];
+
+        foreach ($rows as $row) {
+            $parts = [];
+            foreach ($keys as $key) {
+                $parts[] = trim((string) ($row[$key] ?? ''));
+            }
+            $lines[] = rtrim(implode(' | ', $parts), ' |');
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function templateExists(array $templates, int $templateId): bool
+    {
+        foreach ($templates as $template) {
+            if ((int) ($template['template_id'] ?? 0) === $templateId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

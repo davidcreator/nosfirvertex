@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Template profissional">
+  <rect width="900" height="1200" fill="#f6f8fb"/>
+  <rect x="0" y="0" width="260" height="1200" fill="#243447"/>
+  <rect x="290" y="60" width="550" height="120" rx="12" fill="#304b66"/>
+  <rect x="290" y="210" width="550" height="170" rx="12" fill="#e7edf4"/>
+  <rect x="290" y="410" width="550" height="680" rx="12" fill="#edf2f8"/>
+  <rect x="40" y="80" width="180" height="200" rx="10" fill="#365170"/>
+  <rect x="40" y="320" width="180" height="770" rx="10" fill="#2c4159"/>
+</svg>

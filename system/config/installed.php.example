@@ -1,0 +1,16 @@
+﻿<?php
+declare(strict_types=1);
+
+return [
+    'installed' => true,
+    'app' => [
+        'base_url' => 'http://localhost/aureavertex/',
+    ],
+    'database' => [
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'name' => 'aureavertex',
+        'user' => 'root',
+        'password' => '',
+    ],
+];

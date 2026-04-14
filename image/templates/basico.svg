@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Template básico">
+  <rect width="900" height="1200" fill="#f9fbff"/>
+  <rect x="50" y="40" width="800" height="140" rx="12" fill="#1f4e79"/>
+  <rect x="70" y="210" width="760" height="120" rx="10" fill="#dde9f6"/>
+  <rect x="70" y="360" width="360" height="750" rx="10" fill="#ecf3fb"/>
+  <rect x="470" y="360" width="360" height="750" rx="10" fill="#ecf3fb"/>
+</svg>
