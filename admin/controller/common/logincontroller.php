@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Common;
+namespace NosfirVertex\Admin\Controller\Common;
 
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\System\Engine\Controller;
 
 class LoginController extends Controller
 {

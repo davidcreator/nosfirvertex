@@ -3,21 +3,21 @@ declare(strict_types=1);
 
 return [
     'app' => [
-        'name' => 'AureaVertex Admin',
+        'name' => 'NosfirVertex Admin',
         'layout' => 'layout/admin',
         'area' => 'admin',
     ],
     'routes' => [
-        '' => 'AureaVertex\\Admin\\Controller\\Common\\DashboardController@index',
-        'login' => 'AureaVertex\\Admin\\Controller\\Common\\LoginController@index',
-        'logout' => 'AureaVertex\\Admin\\Controller\\Common\\LoginController@logout',
-        'dashboard' => 'AureaVertex\\Admin\\Controller\\Common\\DashboardController@index',
-        'users' => 'AureaVertex\\Admin\\Controller\\User\\UserController@index',
-        'resumes' => 'AureaVertex\\Admin\\Controller\\Resume\\ResumeController@index',
-        'templates' => 'AureaVertex\\Admin\\Controller\\Template\\TemplateController@index',
-        'ads' => 'AureaVertex\\Admin\\Controller\\Ad\\AdController@index',
-        'settings' => 'AureaVertex\\Admin\\Controller\\Setting\\SettingController@index',
-        'logs' => 'AureaVertex\\Admin\\Controller\\Log\\LogController@index',
-        '404' => 'AureaVertex\\Admin\\Controller\\Common\\DashboardController@notFound',
+        '' => 'NosfirVertex\\Admin\\Controller\\Common\\DashboardController@index',
+        'login' => 'NosfirVertex\\Admin\\Controller\\Common\\LoginController@index',
+        'logout' => 'NosfirVertex\\Admin\\Controller\\Common\\LoginController@logout',
+        'dashboard' => 'NosfirVertex\\Admin\\Controller\\Common\\DashboardController@index',
+        'users' => 'NosfirVertex\\Admin\\Controller\\User\\UserController@index',
+        'resumes' => 'NosfirVertex\\Admin\\Controller\\Resume\\ResumeController@index',
+        'templates' => 'NosfirVertex\\Admin\\Controller\\Template\\TemplateController@index',
+        'ads' => 'NosfirVertex\\Admin\\Controller\\Ad\\AdController@index',
+        'settings' => 'NosfirVertex\\Admin\\Controller\\Setting\\SettingController@index',
+        'logs' => 'NosfirVertex\\Admin\\Controller\\Log\\LogController@index',
+        '404' => 'NosfirVertex\\Admin\\Controller\\Common\\DashboardController@notFound',
     ],
 ];

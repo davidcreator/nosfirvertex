@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Log;
+namespace NosfirVertex\Admin\Controller\Log;
 
-use AureaVertex\Admin\Model\LogModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\LogModel;
+use NosfirVertex\System\Engine\Controller;
 
 class LogController extends Controller
 {

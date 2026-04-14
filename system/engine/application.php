@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\System\Engine;
+namespace NosfirVertex\System\Engine;
 
-use AureaVertex\System\Library\Auth;
-use AureaVertex\System\Library\Config;
-use AureaVertex\System\Library\Csrf;
-use AureaVertex\System\Library\Database;
-use AureaVertex\System\Library\Logger;
-use AureaVertex\System\Library\Request;
-use AureaVertex\System\Library\Response;
-use AureaVertex\System\Library\Session;
-use AureaVertex\System\Library\View;
+use NosfirVertex\System\Library\Auth;
+use NosfirVertex\System\Library\Config;
+use NosfirVertex\System\Library\Csrf;
+use NosfirVertex\System\Library\Database;
+use NosfirVertex\System\Library\Logger;
+use NosfirVertex\System\Library\Request;
+use NosfirVertex\System\Library\Response;
+use NosfirVertex\System\Library\Session;
+use NosfirVertex\System\Library\View;
 
 class Application
 {

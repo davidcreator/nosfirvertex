@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 return [
     'app' => [
-        'name' => 'AureaVertex',
+        'name' => 'NosfirVertex',
         'layout' => 'layout/main',
         'timezone' => 'America/Sao_Paulo',
         'locale' => 'pt-br',

@@ -1,6 +1,6 @@
 <?php
 $donationEnabled = !empty($donation_enabled);
-$title = trim((string) ($donation_title ?? 'Apoie o AureaVertex'));
+$title = trim((string) ($donation_title ?? 'Apoie o NosfirVertex'));
 $message = trim((string) ($donation_message ?? ''));
 $goalText = trim((string) ($donation_goal_text ?? ''));
 $pixKey = trim((string) ($donation_pix_key ?? ''));
@@ -59,7 +59,7 @@ if ($hasQr) {
 </style>
 
 <section class="card">
-    <h1><i class="fa-solid fa-hand-holding-heart"></i> <?= e($title !== '' ? $title : 'Apoie o AureaVertex') ?></h1>
+    <h1><i class="fa-solid fa-hand-holding-heart"></i> <?= e($title !== '' ? $title : 'Apoie o NosfirVertex') ?></h1>
     <p class="muted">
         <?= e($message !== '' ? $message : 'Se você quiser, pode contribuir voluntariamente para manter o projeto gratuito e evoluindo.') ?>
     </p>
@@ -81,7 +81,7 @@ if ($hasQr) {
             <?php if ($hasPix): ?>
                 <article class="card">
                     <h2><i class="fa-solid fa-qrcode"></i> Doação via PIX</h2>
-                    <p class="muted">Beneficiário: <?= e($pixBeneficiary !== '' ? $pixBeneficiary : 'AureaVertex') ?></p>
+                    <p class="muted">Beneficiário: <?= e($pixBeneficiary !== '' ? $pixBeneficiary : 'NosfirVertex') ?></p>
                     <div class="donation-key" id="pixKeyValue"><?= e($pixKey) ?></div>
                     <button class="button" type="button" data-copy-target="pixKeyValue">Copiar chave PIX</button>
                     <?php if ($qrImageUrl !== ''): ?>

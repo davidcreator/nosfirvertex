@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Controller\Account;
+namespace NosfirVertex\Catalog\Controller\Account;
 
-use AureaVertex\Catalog\Model\UserModel;
-use AureaVertex\System\Engine\Controller;
-use AureaVertex\System\Library\Validator;
+use NosfirVertex\Catalog\Model\UserModel;
+use NosfirVertex\System\Engine\Controller;
+use NosfirVertex\System\Library\Validator;
 
 class AuthController extends Controller
 {

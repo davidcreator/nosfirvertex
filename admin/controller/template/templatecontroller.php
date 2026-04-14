@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Template;
+namespace NosfirVertex\Admin\Controller\Template;
 
-use AureaVertex\Admin\Model\TemplateModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\TemplateModel;
+use NosfirVertex\System\Engine\Controller;
 
 class TemplateController extends Controller
 {

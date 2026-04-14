@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Install\Controller;
+namespace NosfirVertex\Install\Controller;
 
-use AureaVertex\Install\Model\InstallerModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Install\Model\InstallerModel;
+use NosfirVertex\System\Engine\Controller;
 
 class InstallerController extends Controller
 {
@@ -179,7 +179,7 @@ class InstallerController extends Controller
 
         $form = array_replace([
             'admin_name' => 'Administrador',
-            'admin_email' => 'admin@aureavertex.local',
+            'admin_email' => 'admin@nosfirvertex.local',
             'admin_password' => '',
             'admin_password_confirm' => '',
         ], $this->getWizardData('step3_form', []));
@@ -307,7 +307,7 @@ class InstallerController extends Controller
             'base_url' => $this->detectBaseUrl(),
             'db_host' => '127.0.0.1',
             'db_port' => '3306',
-            'db_name' => 'aureavertex',
+            'db_name' => 'nosfirvertex',
             'db_user' => 'root',
             'db_password' => '',
             'db_create_if_missing' => '1',
@@ -320,7 +320,7 @@ class InstallerController extends Controller
             'base_url' => trim((string) ($input['base_url'] ?? $this->detectBaseUrl())),
             'db_host' => trim((string) ($input['db_host'] ?? '127.0.0.1')),
             'db_port' => trim((string) ($input['db_port'] ?? '3306')),
-            'db_name' => trim((string) ($input['db_name'] ?? 'aureavertex')),
+            'db_name' => trim((string) ($input['db_name'] ?? 'nosfirvertex')),
             'db_user' => trim((string) ($input['db_user'] ?? 'root')),
             'db_password' => (string) ($input['db_password'] ?? ''),
             'db_create_if_missing' => !empty($input['db_create_if_missing']) ? '1' : '0',

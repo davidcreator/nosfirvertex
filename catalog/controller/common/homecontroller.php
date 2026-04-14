@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Controller\Common;
+namespace NosfirVertex\Catalog\Controller\Common;
 
-use AureaVertex\Catalog\Model\AdModel;
-use AureaVertex\Catalog\Model\TemplateModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Catalog\Model\AdModel;
+use NosfirVertex\Catalog\Model\TemplateModel;
+use NosfirVertex\System\Engine\Controller;
 
 class HomeController extends Controller
 {

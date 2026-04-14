@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'Instalador AureaVertex') ?></title>
+    <title><?= e($app_name ?? 'Instalador NosfirVertex') ?></title>
     <style>
         :root {
             --bg: #f4f6f8;

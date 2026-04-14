@@ -1,5 +1,5 @@
 <div class="card">
-    <h1>Instalador AureaVertex - Passo 3</h1>
+    <h1>Instalador NosfirVertex - Passo 3</h1>
     <p>Defina o administrador inicial e conclua a instalação.</p>
 </div>
 

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Ad;
+namespace NosfirVertex\Admin\Controller\Ad;
 
-use AureaVertex\Admin\Model\AdModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\AdModel;
+use NosfirVertex\System\Engine\Controller;
 
 class AdController extends Controller
 {

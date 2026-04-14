@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Model;
+namespace NosfirVertex\Admin\Model;
 
-use AureaVertex\System\Engine\Model;
+use NosfirVertex\System\Engine\Model;
 
 class LogModel extends Model
 {

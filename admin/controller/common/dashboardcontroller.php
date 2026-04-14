@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Common;
+namespace NosfirVertex\Admin\Controller\Common;
 
-use AureaVertex\Admin\Model\ResumeModel;
-use AureaVertex\Admin\Model\TemplateModel;
-use AureaVertex\Admin\Model\UserModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\ResumeModel;
+use NosfirVertex\Admin\Model\TemplateModel;
+use NosfirVertex\Admin\Model\UserModel;
+use NosfirVertex\System\Engine\Controller;
 
 class DashboardController extends Controller
 {

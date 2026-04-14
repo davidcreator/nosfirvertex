@@ -1,8 +1,8 @@
-# Arquitetura AureaVertex
+# Arquitetura NosfirVertex
 
 ## Visao geral
 
-AureaVertex usa arquitetura MVCL em PHP puro, com organizacao por areas:
+NosfirVertex usa arquitetura MVCL em PHP puro, com organizacao por areas:
 
 - `catalog`: frontend e fluxo do usuario final
 - `admin`: backoffice e governanca
@@ -88,7 +88,7 @@ Estrutura de pasta existe (`/language/pt-br`) para evolucao de internacionalizac
 
 ## Convencoes
 
-- namespaces por area (`AureaVertex\\Catalog\\...`, etc)
+- namespaces por area (`NosfirVertex\\Catalog\\...`, etc)
 - autoload por prefixo e nomes de arquivo em minusculo (via `system/bootstrap.php`)
 - controllers em `controller/<modulo>/...controller.php`
 - models em `model/...model.php`

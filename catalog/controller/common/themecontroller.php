@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Controller\Common;
+namespace NosfirVertex\Catalog\Controller\Common;
 
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\System\Engine\Controller;
 
 class ThemeController extends Controller
 {

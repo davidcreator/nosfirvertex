@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\System\Library;
+namespace NosfirVertex\System\Library;
 
 class Response
 {

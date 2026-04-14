@@ -1,4 +1,4 @@
-# Instalacao AureaVertex
+# Instalacao NosfirVertex
 
 ## Requisitos minimos
 

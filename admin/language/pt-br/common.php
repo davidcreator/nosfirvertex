@@ -2,5 +2,5 @@
 declare(strict_types=1);
 
 return [
-    'heading_title' => 'AureaVertex Administração',
+    'heading_title' => 'NosfirVertex Administração',
 ];

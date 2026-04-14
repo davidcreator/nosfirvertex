@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'AureaVertex Admin') ?></title>
+    <title><?= e($app_name ?? 'NosfirVertex Admin') ?></title>
     <link rel="stylesheet" href="<?= e(base_url('admin/css/fonts/fontawesome/css/all.min.css')) ?>">
     <style>
         :root {
@@ -95,7 +95,7 @@
 <body>
 <div class="shell">
     <nav class="nav">
-        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);">AureaVertex Admin</a></strong>
+        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);">NosfirVertex Admin</a></strong>
         <div class="menu">
             <?php if (!empty($auth_user)): ?>
                 <a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>

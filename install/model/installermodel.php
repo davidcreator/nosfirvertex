@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Install\Model;
+namespace NosfirVertex\Install\Model;
 
-use AureaVertex\System\Engine\Model;
+use NosfirVertex\System\Engine\Model;
 use PDO;
 
 class InstallerModel extends Model
@@ -316,16 +316,16 @@ class InstallerModel extends Model
 
         if ($settingCount === 0) {
             $settings = [
-                ['site_name', 'AureaVertex', 1, 1],
+                ['site_name', 'NosfirVertex', 1, 1],
                 ['default_theme', 'light', 1, 1],
                 ['allow_registration', '1', 0, 1],
                 ['ads_enabled', '1', 0, 1],
                 ['donation_enabled', '1', 0, 1],
-                ['donation_title', 'Apoie o AureaVertex', 0, 1],
+                ['donation_title', 'Apoie o NosfirVertex', 0, 1],
                 ['donation_message', 'Se a plataforma te ajudou, você pode contribuir de forma voluntária para manter o projeto online.', 0, 1],
                 ['donation_goal_text', 'As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.', 0, 1],
                 ['donation_pix_key', '', 0, 1],
-                ['donation_pix_beneficiary', 'AureaVertex', 0, 1],
+                ['donation_pix_beneficiary', 'NosfirVertex', 0, 1],
                 ['donation_paypal_url', '', 0, 1],
                 ['donation_bank_transfer', '', 0, 1],
                 ['donation_qr_image', '', 0, 1],

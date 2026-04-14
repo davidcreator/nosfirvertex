@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Model;
+namespace NosfirVertex\Catalog\Model;
 
-use AureaVertex\System\Engine\Model;
+use NosfirVertex\System\Engine\Model;
 
 class TemplateModel extends Model
 {

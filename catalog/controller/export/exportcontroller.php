@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Controller\Export;
+namespace NosfirVertex\Catalog\Controller\Export;
 
-use AureaVertex\Catalog\Model\ResumeModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Catalog\Model\ResumeModel;
+use NosfirVertex\System\Engine\Controller;
 
 class ExportController extends Controller
 {
@@ -77,7 +77,7 @@ class ExportController extends Controller
         }
 
         $payload = [
-            'platform' => 'AureaVertex',
+            'platform' => 'NosfirVertex',
             'exported_at' => date(DATE_ATOM),
             'resume' => $resume,
             'integration_ready' => [

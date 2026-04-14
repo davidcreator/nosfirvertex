@@ -1,5 +1,5 @@
 <div class="card">
-    <h1>Instalador AureaVertex - Passo 2</h1>
+    <h1>Instalador NosfirVertex - Passo 2</h1>
     <p>Configure a conexão com o banco e teste a comunicação antes de prosseguir.</p>
 </div>
 
@@ -25,7 +25,7 @@
             </div>
             <div>
                 <label for="db_name">Nome do banco</label>
-                <input id="db_name" name="db_name" value="<?= e((string) ($form['db_name'] ?? 'aureavertex')) ?>" required>
+                <input id="db_name" name="db_name" value="<?= e((string) ($form['db_name'] ?? 'nosfirvertex')) ?>" required>
             </div>
             <div>
                 <label for="db_user">Usuário DB</label>

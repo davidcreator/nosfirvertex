@@ -21,10 +21,10 @@ if (is_file($vendorAutoload)) {
 
 spl_autoload_register(static function (string $class): void {
     $prefixes = [
-        'AureaVertex\\System\\' => DIR_SYSTEM . '/',
-        'AureaVertex\\Catalog\\' => DIR_ROOT . '/catalog/',
-        'AureaVertex\\Admin\\' => DIR_ROOT . '/admin/',
-        'AureaVertex\\Install\\' => DIR_ROOT . '/install/',
+        'NosfirVertex\\System\\' => DIR_SYSTEM . '/',
+        'NosfirVertex\\Catalog\\' => DIR_ROOT . '/catalog/',
+        'NosfirVertex\\Admin\\' => DIR_ROOT . '/admin/',
+        'NosfirVertex\\Install\\' => DIR_ROOT . '/install/',
     ];
 
     foreach ($prefixes as $prefix => $baseDir) {

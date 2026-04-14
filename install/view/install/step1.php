@@ -1,5 +1,5 @@
 <div class="card">
-    <h1>Instalador AureaVertex - Passo 1</h1>
+    <h1>Instalador NosfirVertex - Passo 1</h1>
     <p>Valide os requisitos do servidor e as permissões de escrita antes de configurar o banco.</p>
 </div>
 

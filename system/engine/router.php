@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\System\Engine;
+namespace NosfirVertex\System\Engine;
 
 class Router
 {

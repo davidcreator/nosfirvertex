@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\System\Engine;
+namespace NosfirVertex\System\Engine;
 
 abstract class Controller
 {
@@ -22,7 +22,7 @@ abstract class Controller
         $this->session->remove('flash_success');
         $this->session->remove('flash_error');
 
-        $data['app_name'] = $this->config->get('app.name', 'AureaVertex');
+        $data['app_name'] = $this->config->get('app.name', 'NosfirVertex');
         $data['theme'] = $this->session->get('theme', 'light');
         $data['csrf_token'] = $this->csrf->token();
         $data['auth_user'] = $this->auth->user();

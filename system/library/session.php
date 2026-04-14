@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\System\Library;
+namespace NosfirVertex\System\Library;
 
 class Session
 {
@@ -21,7 +21,7 @@ class Session
         }
 
         session_save_path($this->savePath);
-        session_name('aureavertex_session');
+        session_name('nosfirvertex_session');
         session_start();
     }
 

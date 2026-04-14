@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Resume;
+namespace NosfirVertex\Admin\Controller\Resume;
 
-use AureaVertex\Admin\Model\ResumeModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\ResumeModel;
+use NosfirVertex\System\Engine\Controller;
 
 class ResumeController extends Controller
 {

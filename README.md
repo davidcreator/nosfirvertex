@@ -1,10 +1,10 @@
-# AureaVertex
+# NosfirVertex
 
 Plataforma MVCL em PHP para criacao, edicao e exportacao de curriculos profissionais.
 
 ## Visao geral
 
-AureaVertex foi construida com arquitetura inspirada no ReamurCMS, separando claramente:
+NosfirVertex foi construida com arquitetura inspirada no ReamurCMS, separando claramente:
 - `catalog` (area do usuario final)
 - `admin` (painel administrativo)
 - `install` (instalador guiado)

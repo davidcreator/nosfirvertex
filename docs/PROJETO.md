@@ -1,8 +1,8 @@
-# Projeto AureaVertex
+# Projeto NosfirVertex
 
 ## Objetivo
 
-AureaVertex e uma plataforma gratuita para criacao e exportacao de curriculos profissionais, com foco em simplicidade, experiencia mobile e resultado pratico para recolocacao profissional.
+NosfirVertex e uma plataforma gratuita para criacao e exportacao de curriculos profissionais, com foco em simplicidade, experiencia mobile e resultado pratico para recolocacao profissional.
 
 ## Publico alvo
 

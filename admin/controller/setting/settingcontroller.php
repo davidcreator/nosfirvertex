@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Admin\Controller\Setting;
+namespace NosfirVertex\Admin\Controller\Setting;
 
-use AureaVertex\Admin\Model\SettingModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Admin\Model\SettingModel;
+use NosfirVertex\System\Engine\Controller;
 
 class SettingController extends Controller
 {
@@ -43,11 +43,11 @@ class SettingController extends Controller
             'settings_map' => $settingsMap,
             'donation_defaults' => [
                 'donation_enabled' => '1',
-                'donation_title' => 'Apoie o AureaVertex',
+                'donation_title' => 'Apoie o NosfirVertex',
                 'donation_message' => 'Se a plataforma te ajudou, você pode contribuir de forma voluntária para manter o projeto online.',
                 'donation_goal_text' => 'As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.',
                 'donation_pix_key' => '',
-                'donation_pix_beneficiary' => 'AureaVertex',
+                'donation_pix_beneficiary' => 'NosfirVertex',
                 'donation_paypal_url' => '',
                 'donation_bank_transfer' => '',
                 'donation_qr_image' => '',

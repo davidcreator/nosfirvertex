@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'AureaVertex') ?></title>
+    <title><?= e($app_name ?? 'NosfirVertex') ?></title>
     <link rel="stylesheet" href="<?= e(base_url('catalog/view/css/fonts/fontawesome/css/all.min.css')) ?>">
     <style>
         :root {
@@ -219,7 +219,7 @@
 <body>
 <div class="shell">
     <nav class="nav">
-        <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">AureaVertex</a></div>
+        <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">NosfirVertex</a></div>
         <div class="menu">
             <a href="<?= e(base_url('catalog/index.php')) ?>"><i class="fa-solid fa-house"></i> Início</a>
             <a href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Templates</a>
@@ -248,7 +248,7 @@
     <?= $content ?>
 
     <footer>
-        AureaVertex • Plataforma gratuita para criação e exportação de currículos.
+        NosfirVertex • Plataforma gratuita para criação e exportação de currículos.
     </footer>
 </div>
 <script src="<?= e(base_url('catalog/view/js/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>

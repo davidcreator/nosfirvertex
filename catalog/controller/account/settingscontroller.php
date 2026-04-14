@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace AureaVertex\Catalog\Controller\Account;
+namespace NosfirVertex\Catalog\Controller\Account;
 
-use AureaVertex\Catalog\Model\UserModel;
-use AureaVertex\System\Engine\Controller;
+use NosfirVertex\Catalog\Model\UserModel;
+use NosfirVertex\System\Engine\Controller;
 
 class SettingsController extends Controller
 {
