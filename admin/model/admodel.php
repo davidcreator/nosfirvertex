@@ -23,6 +23,7 @@ class AdModel extends Model
         }
 
         $adId = (int) ($data['ad_block_id'] ?? 0);
+        $normalized = $this->normalizePayload($data);
 
         if ($adId > 0) {
             $this->db->execute(
@@ -35,11 +36,11 @@ class AdModel extends Model
                      updated_at = NOW()
                  WHERE ad_block_id = :ad_block_id',
                 [
-                    ':name' => trim((string) ($data['name'] ?? '')),
-                    ':position_code' => trim((string) ($data['position_code'] ?? '')),
-                    ':content_html' => trim((string) ($data['content_html'] ?? '')),
-                    ':is_active' => !empty($data['is_active']) ? 1 : 0,
-                    ':display_order' => (int) ($data['display_order'] ?? 0),
+                    ':name' => $normalized['name'],
+                    ':position_code' => $normalized['position_code'],
+                    ':content_html' => $normalized['content_html'],
+                    ':is_active' => $normalized['is_active'],
+                    ':display_order' => $normalized['display_order'],
                     ':ad_block_id' => $adId,
                 ]
             );
@@ -51,12 +52,49 @@ class AdModel extends Model
             'INSERT INTO ad_blocks (name, position_code, content_html, is_active, display_order, created_at)
              VALUES (:name, :position_code, :content_html, :is_active, :display_order, NOW())',
             [
-                ':name' => trim((string) ($data['name'] ?? '')),
-                ':position_code' => trim((string) ($data['position_code'] ?? '')),
-                ':content_html' => trim((string) ($data['content_html'] ?? '')),
-                ':is_active' => !empty($data['is_active']) ? 1 : 0,
-                ':display_order' => (int) ($data['display_order'] ?? 0),
+                ':name' => $normalized['name'],
+                ':position_code' => $normalized['position_code'],
+                ':content_html' => $normalized['content_html'],
+                ':is_active' => $normalized['is_active'],
+                ':display_order' => $normalized['display_order'],
             ]
         );
+    }
+
+    private function normalizePayload(array $data): array
+    {
+        $name = trim((string) ($data['name'] ?? ''));
+        if ($name === '') {
+            $name = 'Bloco de anúncio';
+        }
+
+        $name = mb_substr($name, 0, 150);
+
+        $positionCode = strtolower(trim((string) ($data['position_code'] ?? '')));
+        if (!preg_match('/^[a-z0-9_]{3,80}$/', $positionCode)) {
+            $positionCode = 'home_mid';
+        }
+
+        $contentHtml = \sanitize_html_fragment((string) ($data['content_html'] ?? ''));
+        if ($contentHtml === '') {
+            $contentHtml = '<p>Conteúdo do anúncio indisponível.</p>';
+        }
+
+        $displayOrder = (int) ($data['display_order'] ?? 0);
+        if ($displayOrder < 0) {
+            $displayOrder = 0;
+        }
+
+        if ($displayOrder > 10000) {
+            $displayOrder = 10000;
+        }
+
+        return [
+            'name' => $name,
+            'position_code' => $positionCode,
+            'content_html' => $contentHtml,
+            'is_active' => !empty($data['is_active']) ? 1 : 0,
+            'display_order' => $displayOrder,
+        ];
     }
 }

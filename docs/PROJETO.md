@@ -33,6 +33,7 @@ NosfirVertex e uma plataforma gratuita para criacao e exportacao de curriculos p
 - visualizacao do curriculo final sem secoes vazias
 - exportacao:
   - PDF (Dompdf quando instalado)
+  - DOCX (ZipArchive habilitado)
   - JSON estruturado para integracoes futuras
 - pagina publica de doacoes (`route=doacoes`)
 
@@ -69,7 +70,7 @@ NosfirVertex e uma plataforma gratuita para criacao e exportacao de curriculos p
 2. selecionar template
 3. preencher formulario assistido
 4. revisar visualizacao final
-5. exportar em PDF ou JSON
+5. exportar em PDF, DOCX ou JSON
 6. manter versoes historicas por atualizacao
 
 ## Estado atual

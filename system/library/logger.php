@@ -5,7 +5,11 @@ namespace NosfirVertex\System\Library;
 
 class Logger
 {
-    public function __construct(private readonly string $logFile, private readonly Database|null $db = null)
+    public function __construct(
+        private readonly string $logFile,
+        private readonly Database|null $db = null,
+        private readonly string|null $requestId = null
+    )
     {
     }
 
@@ -24,9 +28,26 @@ class Logger
         $this->write('error', $message, $context);
     }
 
+    public function requestId(): string|null
+    {
+        return $this->requestId;
+    }
+
     private function write(string $level, string $message, array $context = []): void
     {
-        $line = sprintf("[%s] %s: %s %s\n", date('Y-m-d H:i:s'), strtoupper($level), $message, json_encode($context, JSON_UNESCAPED_UNICODE));
+        $contextWithRequestId = $this->attachRequestId($context);
+        $jsonContext = json_encode($contextWithRequestId, JSON_UNESCAPED_UNICODE);
+        $requestIdForLine = $this->requestId ?? '-';
+
+        $line = sprintf(
+            "[%s] [%s] %s: %s %s\n",
+            date('Y-m-d H:i:s'),
+            $requestIdForLine,
+            strtoupper($level),
+            $message,
+            $jsonContext === false ? '{}' : $jsonContext
+        );
+
         file_put_contents($this->logFile, $line, FILE_APPEND);
 
         if ($this->db === null) {
@@ -34,17 +55,27 @@ class Logger
         }
 
         try {
+            $metadata = json_encode($contextWithRequestId, JSON_UNESCAPED_UNICODE);
             $this->db->execute(
                 'INSERT INTO logs (context, level, message, metadata, created_at) VALUES (:context, :level, :message, :metadata, NOW())',
                 [
-                    ':context' => $context['context'] ?? 'system',
+                    ':context' => $contextWithRequestId['context'] ?? 'system',
                     ':level' => $level,
                     ':message' => $message,
-                    ':metadata' => json_encode($context, JSON_UNESCAPED_UNICODE),
+                    ':metadata' => $metadata === false ? '{}' : $metadata,
                 ]
             );
         } catch (\Throwable) {
             // If DB logging fails, keep file logging as fallback.
         }
+    }
+
+    private function attachRequestId(array $context): array
+    {
+        if ($this->requestId !== null && $this->requestId !== '' && !isset($context['request_id'])) {
+            $context['request_id'] = $this->requestId;
+        }
+
+        return $context;
     }
 }

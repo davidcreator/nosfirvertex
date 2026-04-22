@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'NosfirVertex Admin') ?></title>
+    <title><?= e($app_name ?? 'Vertex Admin') ?></title>
     <link rel="stylesheet" href="<?= e(base_url('admin/css/fonts/fontawesome/css/all.min.css')) ?>">
     <style>
         :root {
@@ -36,7 +36,9 @@
             margin-bottom: 12px;
         }
         .menu { display: flex; gap: 8px; flex-wrap: wrap; }
-        .menu a {
+        .menu form { margin: 0; }
+        .menu a,
+        .menu button {
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 7px 10px;
@@ -46,8 +48,11 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            background: transparent;
+            cursor: pointer;
         }
-        .menu a.primary {
+        .menu a.primary,
+        .menu button.primary {
             background: var(--primary);
             color: #fff;
             border-color: transparent;
@@ -95,7 +100,7 @@
 <body>
 <div class="shell">
     <nav class="nav">
-        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);">NosfirVertex Admin</a></strong>
+        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);">Vertex Admin</a></strong>
         <div class="menu">
             <?php if (!empty($auth_user)): ?>
                 <a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
@@ -105,7 +110,10 @@
                 <a href="<?= e(base_url('admin/index.php?route=ads')) ?>"><i class="fa-solid fa-rectangle-ad"></i> Anúncios</a>
                 <a href="<?= e(base_url('admin/index.php?route=settings')) ?>"><i class="fa-solid fa-gears"></i> Configurações</a>
                 <a href="<?= e(base_url('admin/index.php?route=logs')) ?>"><i class="fa-solid fa-list-check"></i> Logs</a>
-                <a class="primary" href="<?= e(base_url('admin/index.php?route=logout')) ?>"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+                <form method="post" action="<?= e(base_url('admin/index.php?route=logout')) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
+                    <button class="primary" type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                </form>
             <?php endif; ?>
         </div>
     </nav>

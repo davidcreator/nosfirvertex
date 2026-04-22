@@ -36,13 +36,16 @@ class Application
         $response = new Response();
         $session = new Session(DIR_STORAGE . '/sessions');
         $csrf = new Csrf($session);
+        $requestId = $this->generateRequestId();
+
+        $response->addHeader('X-Request-Id: ' . $requestId);
 
         if (in_array($this->area, ['catalog', 'admin'], true) && !is_file($installedConfigFile)) {
             $response->redirect(base_url('install/index.php'));
         }
 
         $db = $this->buildDatabase($config);
-        $logger = new Logger(DIR_STORAGE . '/logs/app.log', $db);
+        $logger = new Logger(DIR_STORAGE . '/logs/app.log', $db, $requestId);
         $view = new View(DIR_ROOT . '/' . $this->area . '/view');
 
         $authRole = $this->area === 'admin' ? 'admin' : 'user';
@@ -57,6 +60,7 @@ class Application
         $registry->set('logger', $logger);
         $registry->set('view', $view);
         $registry->set('auth', $auth);
+        $registry->set('request_id', $requestId);
 
         $routes = $config->get('routes', []);
         $router = new Router($routes);
@@ -65,7 +69,7 @@ class Application
             $match = $router->dispatch($request->getPath());
 
             if ($match === null) {
-                $fallbackAction = $config->get('routes.404');
+                $fallbackAction = $routes[404] ?? $routes['404'] ?? $config->get('routes.not_found');
                 if ($fallbackAction === null) {
                     throw new \RuntimeException('Route not found.');
                 }
@@ -77,10 +81,16 @@ class Application
         } catch (\Throwable $exception) {
             $logger->error('Unhandled exception', [
                 'context' => $this->area,
+                'path' => $request->getPath(),
                 'message' => $exception->getMessage(),
+                'exception_class' => get_class($exception),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
             ]);
 
-            $response->setOutput('<h1>Erro interno</h1><p>Ocorreu um erro e foi registrado para análise.</p>');
+            $response->addHeader('HTTP/1.1 500 Internal Server Error');
+            $response->addHeader('Cache-Control: no-store, no-cache, must-revalidate');
+            $response->setOutput($this->renderInternalErrorPage($requestId));
         }
 
         $response->send();
@@ -132,5 +142,51 @@ class Application
         if (is_string($result)) {
             $registry->get('response')->setOutput($result);
         }
+    }
+
+    private function generateRequestId(): string
+    {
+        try {
+            return dechex(time()) . '-' . bin2hex(random_bytes(8));
+        } catch (\Throwable) {
+            return dechex(time()) . '-' . dechex(mt_rand());
+        }
+    }
+
+    private function renderInternalErrorPage(string $requestId): string
+    {
+        $backUrl = match ($this->area) {
+            'admin' => base_url('admin/index.php?route=dashboard'),
+            'install' => base_url('install/index.php'),
+            default => base_url('catalog/index.php'),
+        };
+
+        $backLabel = match ($this->area) {
+            'admin' => 'Voltar ao admin',
+            'install' => 'Voltar ao instalador',
+            default => 'Voltar ao inicio',
+        };
+
+        $safeRequestId = htmlspecialchars($requestId, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeBackUrl = htmlspecialchars($backUrl, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeBackLabel = htmlspecialchars($backLabel, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        return '<!doctype html>'
+            . '<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+            . '<title>Erro interno</title>'
+            . '<style>'
+            . 'body{margin:0;font-family:Segoe UI,Tahoma,sans-serif;background:#f4f7fb;color:#1b2d3a;}'
+            . '.wrap{max-width:680px;margin:48px auto;padding:0 16px;}'
+            . '.card{background:#fff;border:1px solid #d6e1e8;border-radius:12px;padding:22px;box-shadow:0 12px 24px rgba(27,45,58,.08);}'
+            . 'h1{margin:0 0 10px;font-size:26px;}p{margin:0 0 10px;line-height:1.5;}'
+            . '.muted{color:#5f7280;font-size:13px;word-break:break-word;}'
+            . 'a.btn{display:inline-block;margin-top:8px;background:#0e7c7b;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;}'
+            . '</style></head><body>'
+            . '<div class="wrap"><div class="card">'
+            . '<h1>Erro interno</h1>'
+            . '<p>Ocorreu um erro inesperado. Nossa equipe pode localizar o evento com o identificador abaixo.</p>'
+            . '<p class="muted">Request ID: <strong>' . $safeRequestId . '</strong></p>'
+            . '<a class="btn" href="' . $safeBackUrl . '">' . $safeBackLabel . '</a>'
+            . '</div></div></body></html>';
     }
 }

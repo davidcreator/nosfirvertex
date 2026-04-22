@@ -52,7 +52,7 @@ Ao concluir:
 - catalogo: `http://seu-host/catalog/index.php`
 - admin: `http://seu-host/admin/index.php`
 
-## Dompdf (opcional)
+## Dompdf (opcional, recomendado)
 
 Para exportacao PDF real:
 
@@ -60,7 +60,12 @@ Para exportacao PDF real:
 composer --working-dir=system install
 ```
 
-Sem Dompdf, o endpoint de PDF retorna HTML de fallback.
+Sem Dompdf, a exportacao PDF fica indisponivel.
+
+## DOCX
+
+- a exportacao DOCX usa `ZipArchive`
+- se a extensao `zip` nao estiver habilitada no PHP, a exportacao DOCX fica indisponivel
 
 ## Troubleshooting rapido
 

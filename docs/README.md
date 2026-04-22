@@ -11,6 +11,8 @@ Esta pasta concentra a documentacao tecnica e funcional do projeto.
 - `ROTAS.md`: mapa de rotas de catalogo, admin e instalador.
 - `BANCO_DE_DADOS.md`: estrutura de tabelas e relacoes principais.
 - `OPERACAO_ADMIN.md`: uso do painel administrativo no dia a dia.
+- `FREATURES.md`: backlog priorizado de melhorias tecnicas e funcionais.
+- `QUALIDADE.md`: padrao de quality gate (lint, analise estatica e smoke).
 
 ## Ordem sugerida de leitura
 
@@ -20,3 +22,4 @@ Esta pasta concentra a documentacao tecnica e funcional do projeto.
 4. `ROTAS.md`
 5. `BANCO_DE_DADOS.md`
 6. `OPERACAO_ADMIN.md`
+7. `QUALIDADE.md`

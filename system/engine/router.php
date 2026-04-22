@@ -14,6 +14,11 @@ class Router
         $normalized = trim($path, '/');
 
         foreach ($this->routes as $pattern => $action) {
+            if (!is_string($action)) {
+                continue;
+            }
+
+            $pattern = (string) $pattern;
             $regex = $this->patternToRegex($pattern);
 
             if (!preg_match($regex, $normalized, $matches)) {

@@ -38,6 +38,11 @@ class LoginController extends Controller
 
     public function logout(): never
     {
+        if (!$this->request->isPost() || !$this->validateCsrfToken()) {
+            $this->flash('error', 'Requisição inválida para logout.');
+            $this->redirect('admin/index.php?route=dashboard');
+        }
+
         $this->auth->logout();
         $this->flash('success', 'Sessão administrativa encerrada.');
         $this->redirect('admin/index.php?route=login');

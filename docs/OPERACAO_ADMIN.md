@@ -16,11 +16,15 @@
 
 - lista contas cadastradas
 - apoia auditoria basica de crescimento e status
+- filtros por texto, papel, status e periodo
+- paginacao configuravel (20, 50, 100 itens por pagina)
 
 ### Curriculos
 
 - lista curriculos criados na plataforma
 - permite acompanhar volume e atividade
+- filtros por texto, status e periodo de atualizacao
+- paginacao configuravel (20, 50, 100 itens por pagina)
 
 ### Templates
 
@@ -60,6 +64,8 @@ Campos de doacao no admin:
 
 - visualiza logs persistidos em banco
 - mostra cauda do arquivo `system/storage/logs/app.log`
+- filtros por texto, nivel, contexto, `request_id` e periodo
+- paginacao configuravel (20, 50, 100 itens por pagina)
 
 ## Checklist operacional recomendado
 

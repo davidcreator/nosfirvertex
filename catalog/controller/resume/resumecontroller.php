@@ -26,7 +26,7 @@ class ResumeController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $this->flash('error', 'Token de segurança inválido.');
+                $this->flash('error', 'Token de seguranca invalido.');
                 $this->redirect('catalog/index.php?route=resume/create');
             }
 
@@ -35,14 +35,24 @@ class ResumeController extends Controller
             if (trim($form['title']) === '') {
                 return $this->page('resume/form', [
                     'mode' => 'create',
-                    'error' => 'Informe um título para o currículo.',
+                    'error' => 'Informe um titulo para o curriculo.',
+                    'form' => $form,
+                    'templates' => $templates,
+                ]);
+            }
+
+            $formatError = $this->validateAtsCriticalRules($form);
+            if ($formatError !== '') {
+                return $this->page('resume/form', [
+                    'mode' => 'create',
+                    'error' => $formatError,
                     'form' => $form,
                     'templates' => $templates,
                 ]);
             }
 
             $resumeId = $resumeModel->save((int) $this->auth->id(), $form, null);
-            $this->flash('success', 'Currículo criado com sucesso.');
+            $this->flash('success', 'Curriculo criado com sucesso.');
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -65,7 +75,7 @@ class ResumeController extends Controller
         $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
 
         if ($resume === null) {
-            $this->flash('error', 'Currículo não encontrado.');
+            $this->flash('error', 'Curriculo nao encontrado.');
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -73,7 +83,7 @@ class ResumeController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $this->flash('error', 'Token de segurança inválido.');
+                $this->flash('error', 'Token de seguranca invalido.');
                 $this->redirect('catalog/index.php?route=resume/edit/' . $resumeId);
             }
 
@@ -83,14 +93,25 @@ class ResumeController extends Controller
                 return $this->page('resume/form', [
                     'mode' => 'edit',
                     'resume_id' => $resumeId,
-                    'error' => 'Informe um título para o currículo.',
+                    'error' => 'Informe um titulo para o curriculo.',
+                    'form' => $form,
+                    'templates' => $templateModel->getActiveTemplates(),
+                ]);
+            }
+
+            $formatError = $this->validateAtsCriticalRules($form);
+            if ($formatError !== '') {
+                return $this->page('resume/form', [
+                    'mode' => 'edit',
+                    'resume_id' => $resumeId,
+                    'error' => $formatError,
                     'form' => $form,
                     'templates' => $templateModel->getActiveTemplates(),
                 ]);
             }
 
             $resumeModel->save((int) $this->auth->id(), $form, $resumeId);
-            $this->flash('success', 'Currículo atualizado.');
+            $this->flash('success', 'Curriculo atualizado.');
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -112,7 +133,7 @@ class ResumeController extends Controller
         $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
 
         if ($resume === null) {
-            $this->flash('error', 'Currículo não encontrado.');
+            $this->flash('error', 'Curriculo nao encontrado.');
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -126,7 +147,7 @@ class ResumeController extends Controller
         $this->ensureAuth();
 
         if (!$this->request->isPost() || !$this->validateCsrfToken()) {
-            $this->flash('error', 'Requisição inválida para exclusão de currículo.');
+            $this->flash('error', 'Requisicao invalida para exclusao de curriculo.');
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -134,14 +155,14 @@ class ResumeController extends Controller
         $resumeModel = new ResumeModel($this->registry);
         $resumeModel->delete($resumeId, (int) $this->auth->id());
 
-        $this->flash('success', 'Currículo removido.');
+        $this->flash('success', 'Curriculo removido.');
         $this->redirect('catalog/index.php?route=dashboard');
     }
 
     private function ensureAuth(): void
     {
         if (!$this->auth->check()) {
-            $this->flash('error', 'Faça login para acessar seus currículos.');
+            $this->flash('error', 'Faca login para acessar seus curriculos.');
             $this->redirect('catalog/index.php?route=login');
         }
     }
@@ -244,5 +265,90 @@ class ResumeController extends Controller
         }
 
         return false;
+    }
+
+    private function validateAtsCriticalRules(array $form): string
+    {
+        $experienceError = $this->validateStructuredPeriodLines(
+            (string) ($form['experiences_raw'] ?? ''),
+            'Experiencias',
+            true
+        );
+        if ($experienceError !== '') {
+            return $experienceError;
+        }
+
+        return $this->validateStructuredPeriodLines(
+            (string) ($form['educations_raw'] ?? ''),
+            'Formacao academica',
+            true
+        );
+    }
+
+    private function validateStructuredPeriodLines(string $raw, string $sectionLabel, bool $allowCurrentEnd): string
+    {
+        $lines = $this->splitNonEmptyLines($raw);
+
+        foreach ($lines as $index => $line) {
+            [$first, $second, $start, $end, $description] = $this->splitLineParts($line, 5);
+            if ($first === '' && $second === '' && $start === '' && $end === '' && $description === '') {
+                continue;
+            }
+
+            $lineNumber = $index + 1;
+            if ($start !== '' && !$this->isMonthYear($start)) {
+                return $sectionLabel . ': linha ' . $lineNumber . ' com data de inicio invalida. Use MM/AAAA.';
+            }
+
+            if ($end !== '') {
+                $isCurrentLabel = $allowCurrentEnd && $this->isCurrentPeriodLabel($end);
+                if (!$isCurrentLabel && !$this->isMonthYear($end)) {
+                    return $sectionLabel . ': linha ' . $lineNumber . ' com data de fim invalida. Use MM/AAAA ou Atual.';
+                }
+            }
+
+            if ($description !== '' && $this->containsDatePattern($description)) {
+                return $sectionLabel . ': linha ' . $lineNumber . ' possui data na descricao. Coloque datas apenas nos campos de inicio/fim.';
+            }
+        }
+
+        return '';
+    }
+
+    private function splitNonEmptyLines(string $raw): array
+    {
+        $lines = preg_split('/\r\n|\r|\n/', trim($raw)) ?: [];
+
+        return array_values(array_filter(array_map('trim', $lines), static fn (string $line): bool => $line !== ''));
+    }
+
+    private function splitLineParts(string $line, int $count): array
+    {
+        $parts = array_map('trim', explode('|', $line));
+        while (count($parts) < $count) {
+            $parts[] = '';
+        }
+
+        return array_slice($parts, 0, $count);
+    }
+
+    private function isMonthYear(string $value): bool
+    {
+        return preg_match('/^(0[1-9]|1[0-2])\/(19|20)\d{2}$/', trim($value)) === 1;
+    }
+
+    private function isCurrentPeriodLabel(string $value): bool
+    {
+        $normalized = mb_strtolower(trim($value));
+
+        return in_array($normalized, ['atual', 'presente', 'em andamento', 'cursando'], true);
+    }
+
+    private function containsDatePattern(string $value): bool
+    {
+        return preg_match(
+            '/\b(0[1-9]|1[0-2])\/(19|20)\d{2}\b|\b(19|20)\d{2}\s*[-–]\s*(19|20)\d{2}\b/u',
+            $value
+        ) === 1;
     }
 }

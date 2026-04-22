@@ -32,6 +32,11 @@ Fluxo resumido:
 7. executa `Controller@metodo`
 8. envia resposta final via `Response::send()`
 
+Em caso de excecao nao tratada:
+- registra erro com `request_id`
+- responde com HTTP `500`
+- envia pagina padronizada de erro com `request_id` para rastreio
+
 ## Roteamento
 
 - cada area define suas rotas em `<area>/config.php`
@@ -84,6 +89,7 @@ Estrutura de pasta existe (`/language/pt-br`) para evolucao de internacionalizac
 - `Csrf`: token por sessao e validacao com `hash_equals`
 - `Session`: sessao em `system/storage/sessions`
 - `Logger`: arquivo + persistencia em tabela `logs` (quando DB disponivel)
+  - inclui `request_id` em linha de arquivo e `metadata` no banco
 - `View`: renderizacao de template/layout
 
 ## Convencoes
@@ -102,7 +108,7 @@ Estrutura de pasta existe (`/language/pt-br`) para evolucao de internacionalizac
 4. `persistSections()` normaliza e grava secoes + tabelas auxiliares
 5. `resume_versions` recebe snapshot JSON da versao
 6. visualizacao em `resume/view` renderiza apenas campos preenchidos
-7. exportacao PDF/JSON reutiliza payload detalhado do curriculo
+7. exportacao PDF/DOCX/JSON reutiliza payload detalhado do curriculo
 
 ## Fluxo de doacoes
 
@@ -114,6 +120,6 @@ Estrutura de pasta existe (`/language/pt-br`) para evolucao de internacionalizac
 ## Decisoes tecnicas relevantes
 
 - fallback sem DB em alguns models (ex.: templates) para manter resiliencia
-- PDF com fallback HTML quando Dompdf nao estiver instalado
+- PDF indisponivel quando Dompdf nao estiver instalado (sem fallback HTML no endpoint de PDF)
 - configuracao em banco (`settings`) para ajustes sem deploy
 - sessao e storage local para ambiente simples de hospedagem compartilhada

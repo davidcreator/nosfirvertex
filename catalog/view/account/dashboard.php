@@ -32,6 +32,7 @@
                             <a href="<?= e(base_url('catalog/index.php?route=resume/view/' . $resume['resume_id'])) ?>">Ver</a> |
                             <a href="<?= e(base_url('catalog/index.php?route=resume/edit/' . $resume['resume_id'])) ?>">Editar</a> |
                             <a href="<?= e(base_url('catalog/index.php?route=resume/export/pdf/' . $resume['resume_id'])) ?>">PDF</a> |
+                            <a href="<?= e(base_url('catalog/index.php?route=resume/export/docx/' . $resume['resume_id'])) ?>">DOCX</a> |
                             <a href="<?= e(base_url('catalog/index.php?route=resume/export/json/' . $resume['resume_id'])) ?>">JSON</a>
                             <form method="post" action="<?= e(base_url('catalog/index.php?route=resume/delete/' . $resume['resume_id'])) ?>" style="display:inline;" onsubmit="return confirm('Remover currículo?');">
                                 <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">

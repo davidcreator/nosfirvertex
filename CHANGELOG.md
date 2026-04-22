@@ -8,6 +8,13 @@ Formato inspirado em Keep a Changelog.
 
 ### Added
 - Estrutura inicial de changelog para rastrear evolucao por versao e data.
+- Workflow de CI em `.github/workflows/ci.yml` com quality gate para `pull_request` e `push`.
+- Smoke test HTTP de rotas principais em `tests/smoke/routes_smoke.php`.
+- Guia de qualidade em `docs/QUALIDADE.md`.
+
+### Changed
+- Processo de validacao automatica passa a incluir lint PHP, analise estatica (PHPStan) e smoke de rotas.
+- Smoke test passou a validar fluxos `POST/CSRF` (login, logout e troca de tema) em `catalog` e `admin`.
 
 ## [0.1.0] - 2026-04-13
 

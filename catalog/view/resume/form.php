@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $isEdit = ($mode ?? 'create') === 'edit';
 $formData = is_array($form ?? null) ? $form : [];
 $value = static fn (string $key, string $default = ''): string => (string) ($formData[$key] ?? $default);
@@ -99,13 +99,13 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
 </style>
 
 <section class="card">
-    <h1><?= $isEdit ? 'Editar currículo' : 'Criar currículo passo a passo' ?></h1>
+    <h1><?= $isEdit ? 'Editar currÃ­culo' : 'Criar currÃ­culo passo a passo' ?></h1>
     <p class="muted">Preencha com objetividade. Formato recomendado para listas: <strong>campo 1 | campo 2 | campo 3</strong>.</p>
 </section>
 
 <section class="card assistant-board">
     <h2>Assistente de preenchimento</h2>
-    <p class="muted">Este assistente acompanha a qualidade do currículo em tempo real e ajuda você a preencher os campos mais importantes.</p>
+    <p class="muted">Este assistente acompanha a qualidade do currÃ­culo em tempo real e ajuda vocÃª a preencher os campos mais importantes.</p>
 
     <div class="assistant-progress-track" aria-hidden="true">
         <div class="assistant-progress-fill" id="assistantProgressFill"></div>
@@ -113,24 +113,24 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
     <p class="assistant-progress-text" id="assistantProgressText">Progresso: 0%</p>
 
     <ul class="assistant-checklist">
-        <li data-check="title">Definir título do currículo</li>
+        <li data-check="title">Definir tÃ­tulo do currÃ­culo</li>
         <li data-check="personal_data">Informar dados pessoais de contato</li>
         <li data-check="positioning">Preencher objetivo ou resumo</li>
-        <li data-check="experience">Adicionar pelo menos 1 experiência</li>
-        <li data-check="education">Adicionar pelo menos 1 formação</li>
+        <li data-check="experience">Adicionar pelo menos 1 experiÃªncia</li>
+        <li data-check="education">Adicionar pelo menos 1 formaÃ§Ã£o</li>
         <li data-check="skills">Adicionar habilidades principais</li>
     </ul>
 
     <div class="assistant-tip" id="assistantTip">
-        Dica ativa: comece pelo título e dados pessoais, depois registre experiências com resultados em formato de bullets.
+        Dica ativa: comece pelo tÃ­tulo e dados pessoais, depois registre experiÃªncias com resultados em formato de bullets.
     </div>
 
     <div class="assistant-anchors">
-        <a class="assistant-anchor" href="#section-basico">Dados básicos</a>
+        <a class="assistant-anchor" href="#section-basico">Dados bÃ¡sicos</a>
         <a class="assistant-anchor" href="#section-posicionamento">Objetivo e resumo</a>
-        <a class="assistant-anchor" href="#section-experiencia">Experiência</a>
-        <a class="assistant-anchor" href="#section-formacao">Formação</a>
-        <a class="assistant-anchor" href="#section-competencias">Competências</a>
+        <a class="assistant-anchor" href="#section-experiencia">ExperiÃªncia</a>
+        <a class="assistant-anchor" href="#section-formacao">FormaÃ§Ã£o</a>
+        <a class="assistant-anchor" href="#section-competencias">CompetÃªncias</a>
         <a class="assistant-anchor" href="#section-complementar">Complementares</a>
     </div>
 </section>
@@ -147,11 +147,11 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
     <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
 
     <section id="section-basico" class="card section-card">
-        <h2>Dados básicos</h2>
+        <h2>Dados bÃ¡sicos</h2>
         <div class="grid cols-2">
             <div>
-                <label for="title">Título do currículo</label>
-                <input id="title" name="title" value="<?= e($value('title')) ?>" required data-tip="Use um título claro, por exemplo: Analista Financeiro | Controladoria">
+                <label for="title">TÃ­tulo do currÃ­culo</label>
+                <input id="title" name="title" value="<?= e($value('title')) ?>" required data-tip="Use um tÃ­tulo claro, por exemplo: Analista Financeiro | Controladoria">
                 <p class="field-meta"><span data-counter-for="title">0</span> caracteres</p>
             </div>
             <div>
@@ -176,7 +176,7 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
     </section>
 
     <section class="card section-card">
-        <h2>Personalização visual</h2>
+        <h2>PersonalizaÃ§Ã£o visual</h2>
         <p class="muted">Preset padrao: LinkedIn.</p>
         <div class="grid cols-2">
             <div>
@@ -192,7 +192,7 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
                 <input id="accent_color" name="accent_color" type="color" value="<?= e($value('accent_color', '#0a66c2')) ?>">
             </div>
             <div>
-                <label for="header_bg_color">Cor do fundo do cabeçalho</label>
+                <label for="header_bg_color">Cor do fundo do cabeÃ§alho</label>
                 <input id="header_bg_color" name="header_bg_color" type="color" value="<?= e($value('header_bg_color', '#f3f8fd')) ?>">
             </div>
             <div>
@@ -223,31 +223,31 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
         <div class="field-actions">
             <button type="button" data-example-target="professional_summary" data-example-value="Profissional com 6 anos em operacoes e analise de indicadores, com foco em produtividade, reducao de custos e melhoria continua.">Inserir exemplo</button>
         </div>
-        <textarea id="professional_summary" name="professional_summary" data-tip="Destaque experiência total, especialidades e resultados."><?= e($value('professional_summary')) ?></textarea>
+        <textarea id="professional_summary" name="professional_summary" data-tip="Destaque experiÃªncia total, especialidades e resultados."><?= e($value('professional_summary')) ?></textarea>
         <p class="field-meta"><span data-counter-for="professional_summary">0</span> caracteres</p>
     </section>
 
     <section id="section-experiencia" class="card section-card">
-        <h2>Experiências</h2>
-        <p class="muted">Uma linha por experiência: <strong>Empresa | Cargo | Início | Fim | Descrição</strong>. Use <strong>;</strong> para separar bullets de resultado.</p>
+        <h2>ExperiÃªncias</h2>
+        <p class="muted">Uma linha por experiencia: <strong>Empresa | Cargo | Inicio (MM/AAAA) | Fim (MM/AAAA ou Atual) | Descricao</strong>. Use <strong>;</strong> para separar bullets de resultado.</p>
         <div class="field-actions">
-            <button type="button" data-example-target="experiences_raw" data-example-value="Empresa A | Analista de Operações | 2022 | Atual | Reduzi custos em 18%; Automatizei relatórios semanais; Treinei 5 analistas juniores">Inserir exemplo</button>
+            <button type="button" data-example-target="experiences_raw" data-example-value="Empresa A | Analista de Operacoes | 01/2022 | Atual | Reduzi custos em 18%; Automatizei relatorios semanais; Treinei 5 analistas juniores">Inserir exemplo</button>
         </div>
-        <textarea id="experiences_raw" name="experiences_raw" data-tip="Foque em resultados mensuráveis. Cada ';' vira um bullet no currículo final."><?= e($value('experiences_raw')) ?></textarea>
+        <textarea id="experiences_raw" name="experiences_raw" data-tip="Use datas apenas nos campos de inicio/fim no formato MM/AAAA. Cada ';' vira um bullet no curriculo final."><?= e($value('experiences_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="experiences_raw">0</span> caracteres</p>
     </section>
 
     <section id="section-formacao" class="card section-card">
-        <h2>Formação acadêmica</h2>
-        <p class="muted">Uma linha por formação: <strong>Instituição | Curso | Início | Fim | Observação</strong></p>
-        <textarea id="educations_raw" name="educations_raw" data-tip="Adicione formação mais recente primeiro."><?= e($value('educations_raw')) ?></textarea>
+        <h2>FormaÃ§Ã£o acadÃªmica</h2>
+        <p class="muted">Uma linha por formacao: <strong>Instituicao | Curso | Inicio (MM/AAAA) | Fim (MM/AAAA ou Atual) | Observacao</strong></p>
+        <textarea id="educations_raw" name="educations_raw" data-tip="Use datas em MM/AAAA e evite datas na descricao."><?= e($value('educations_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="educations_raw">0</span> caracteres</p>
     </section>
 
     <section id="section-competencias" class="card section-card">
-        <h2>Competências técnicas</h2>
-        <p class="muted">Uma linha por habilidade: <strong>Habilidade | Nível</strong></p>
-        <textarea id="skills_raw" name="skills_raw" data-tip="Liste ferramentas e competências relevantes para a vaga."><?= e($value('skills_raw')) ?></textarea>
+        <h2>CompetÃªncias tÃ©cnicas</h2>
+        <p class="muted">Uma linha por habilidade: <strong>Habilidade | NÃ­vel</strong></p>
+        <textarea id="skills_raw" name="skills_raw" data-tip="Liste ferramentas e competÃªncias relevantes para a vaga."><?= e($value('skills_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="skills_raw">0</span> caracteres</p>
     </section>
 
@@ -260,17 +260,17 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
         <p class="field-meta"><span data-counter-for="courses_raw">0</span> caracteres</p>
 
         <h3>Idiomas</h3>
-        <p class="muted">Uma linha por idioma: <strong>Idioma | Nível</strong></p>
+        <p class="muted">Uma linha por idioma: <strong>Idioma | NÃ­vel</strong></p>
         <textarea id="languages_raw" name="languages_raw" data-tip="Exemplo: Ingles | Intermediario."><?= e($value('languages_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="languages_raw">0</span> caracteres</p>
 
-        <h3>Certificações</h3>
-        <p class="muted">Uma linha por certificação: <strong>Título | Organização | Ano</strong></p>
-        <textarea id="certifications_raw" name="certifications_raw" data-tip="Priorize certificações atuais e relevantes."><?= e($value('certifications_raw')) ?></textarea>
+        <h3>CertificaÃ§Ãµes</h3>
+        <p class="muted">Uma linha por certificaÃ§Ã£o: <strong>TÃ­tulo | OrganizaÃ§Ã£o | Ano</strong></p>
+        <textarea id="certifications_raw" name="certifications_raw" data-tip="Priorize certificaÃ§Ãµes atuais e relevantes."><?= e($value('certifications_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="certifications_raw">0</span> caracteres</p>
 
         <h3>Projetos</h3>
-        <p class="muted">Uma linha por projeto: <strong>Nome | Função | Link | Descrição</strong></p>
+        <p class="muted">Uma linha por projeto: <strong>Nome | FunÃ§Ã£o | Link | DescriÃ§Ã£o</strong></p>
         <textarea id="projects_raw" name="projects_raw" data-tip="Descreva projeto com impacto e contexto."><?= e($value('projects_raw')) ?></textarea>
         <p class="field-meta"><span data-counter-for="projects_raw">0</span> caracteres</p>
 
@@ -281,7 +281,7 @@ $value = static fn (string $key, string $default = ''): string => (string) ($for
     </section>
 
     <div class="grid cols-2">
-        <button class="button primary" type="submit">Salvar currículo</button>
+        <button class="button primary" type="submit">Salvar currÃ­culo</button>
         <a class="button" href="<?= e(base_url('catalog/index.php?route=dashboard')) ?>">Voltar ao painel</a>
     </div>
 </form>

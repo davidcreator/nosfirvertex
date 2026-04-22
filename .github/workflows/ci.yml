@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, pdo, pdo_mysql, json
+          tools: composer, phpstan
+
+      - name: Install dependencies
+        run: composer --working-dir=system install --no-interaction --no-progress --prefer-dist
+
+      - name: PHP Lint
+        run: |
+          set -euo pipefail
+          git ls-files '*.php' ':!:system/vendor/**' ':!:system/storage/**' \
+            | while IFS= read -r file; do
+              php -l "$file"
+            done
+
+      - name: Static analysis (PHPStan)
+        run: phpstan analyse -c phpstan.neon --no-progress
+
+      - name: Prepare smoke config
+        run: |
+          cat > system/config/installed.php <<'PHP'
+          <?php
+          declare(strict_types=1);
+          
+          return [
+              'app' => [
+                  'base_url' => 'http://127.0.0.1:8080/',
+              ],
+              'database' => [
+                  'host' => '',
+                  'port' => 3306,
+                  'name' => '',
+                  'user' => '',
+                  'password' => '',
+              ],
+          ];
+          PHP
+
+      - name: Smoke routes
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:8080 -t . >/tmp/nosfirvertex-server.log 2>&1 &
+          SERVER_PID=$!
+          trap "kill ${SERVER_PID} || true" EXIT
+          sleep 2
+          php tests/smoke/routes_smoke.php http://127.0.0.1:8080

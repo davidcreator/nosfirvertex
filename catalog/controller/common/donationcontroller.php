@@ -16,17 +16,17 @@ class DonationController extends Controller
 
         return $this->page('common/donate', [
             'donation_enabled' => $donationEnabled,
-            'donation_title' => $settingModel->get('donation_title', 'Apoie o NosfirVertex'),
+            'donation_title' => $settingModel->get('donation_title', 'Apoie o Projeto Vertex'),
             'donation_message' => $settingModel->get(
                 'donation_message',
-                'Se o NosfirVertex te ajudou, você pode contribuir de forma voluntária para manter o projeto online.'
+                'Se o Projeto Vertex te ajudou, você pode contribuir de forma voluntária para manter o projeto online.'
             ),
             'donation_goal_text' => $settingModel->get(
                 'donation_goal_text',
                 'As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.'
             ),
             'donation_pix_key' => $settingModel->get('donation_pix_key', ''),
-            'donation_pix_beneficiary' => $settingModel->get('donation_pix_beneficiary', 'NosfirVertex'),
+            'donation_pix_beneficiary' => $settingModel->get('donation_pix_beneficiary', 'Nosfir'),
             'donation_paypal_url' => $settingModel->get('donation_paypal_url', ''),
             'donation_bank_transfer' => $settingModel->get('donation_bank_transfer', ''),
             'donation_qr_image' => $settingModel->get('donation_qr_image', ''),

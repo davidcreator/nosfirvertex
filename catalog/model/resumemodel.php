@@ -82,60 +82,63 @@ class ResumeModel extends Model
         $title = trim((string) ($data['title'] ?? 'Meu Currículo'));
         $templateId = (int) ($data['template_id'] ?? 0);
         $templateId = $templateId > 0 ? $templateId : null;
+        $status = trim((string) ($data['status'] ?? 'draft')) === 'published' ? 'published' : 'draft';
 
-        if ($resumeId === null) {
-            $this->db->execute(
-                'INSERT INTO resumes (user_id, template_id, title, personal_data, objective, professional_summary, status, created_at)
-                 VALUES (:user_id, :template_id, :title, :personal_data, :objective, :professional_summary, :status, NOW())',
-                [
-                    ':user_id' => $userId,
-                    ':template_id' => $templateId,
-                    ':title' => $title,
-                    ':personal_data' => trim((string) ($data['personal_data'] ?? '')),
-                    ':objective' => trim((string) ($data['objective'] ?? '')),
-                    ':professional_summary' => trim((string) ($data['professional_summary'] ?? '')),
-                    ':status' => trim((string) ($data['status'] ?? 'draft')) === 'published' ? 'published' : 'draft',
-                ]
-            );
+        return $this->db->transaction(function () use ($userId, $data, $resumeId, $title, $templateId, $status): int {
+            if ($resumeId === null) {
+                $this->db->execute(
+                    'INSERT INTO resumes (user_id, template_id, title, personal_data, objective, professional_summary, status, created_at)
+                     VALUES (:user_id, :template_id, :title, :personal_data, :objective, :professional_summary, :status, NOW())',
+                    [
+                        ':user_id' => $userId,
+                        ':template_id' => $templateId,
+                        ':title' => $title,
+                        ':personal_data' => trim((string) ($data['personal_data'] ?? '')),
+                        ':objective' => trim((string) ($data['objective'] ?? '')),
+                        ':professional_summary' => trim((string) ($data['professional_summary'] ?? '')),
+                        ':status' => $status,
+                    ]
+                );
 
-            $resumeId = $this->db->lastInsertId();
-        } else {
+                $resumeId = $this->db->lastInsertId();
+            } else {
+                $this->db->execute(
+                    'UPDATE resumes
+                     SET template_id = :template_id,
+                         title = :title,
+                         personal_data = :personal_data,
+                         objective = :objective,
+                         professional_summary = :professional_summary,
+                         status = :status,
+                         updated_at = NOW()
+                     WHERE resume_id = :resume_id AND user_id = :user_id',
+                    [
+                        ':template_id' => $templateId,
+                        ':title' => $title,
+                        ':personal_data' => trim((string) ($data['personal_data'] ?? '')),
+                        ':objective' => trim((string) ($data['objective'] ?? '')),
+                        ':professional_summary' => trim((string) ($data['professional_summary'] ?? '')),
+                        ':status' => $status,
+                        ':resume_id' => $resumeId,
+                        ':user_id' => $userId,
+                    ]
+                );
+            }
+
+            $this->persistSections($resumeId, $data);
+
+            $snapshot = json_encode($this->getDetailedByIdForUser($resumeId, $userId), JSON_UNESCAPED_UNICODE);
             $this->db->execute(
-                'UPDATE resumes
-                 SET template_id = :template_id,
-                     title = :title,
-                     personal_data = :personal_data,
-                     objective = :objective,
-                     professional_summary = :professional_summary,
-                     status = :status,
-                     updated_at = NOW()
-                 WHERE resume_id = :resume_id AND user_id = :user_id',
+                'INSERT INTO resume_versions (resume_id, version_label, payload, created_at) VALUES (:resume_id, :version_label, :payload, NOW())',
                 [
-                    ':template_id' => $templateId,
-                    ':title' => $title,
-                    ':personal_data' => trim((string) ($data['personal_data'] ?? '')),
-                    ':objective' => trim((string) ($data['objective'] ?? '')),
-                    ':professional_summary' => trim((string) ($data['professional_summary'] ?? '')),
-                    ':status' => trim((string) ($data['status'] ?? 'draft')) === 'published' ? 'published' : 'draft',
                     ':resume_id' => $resumeId,
-                    ':user_id' => $userId,
+                    ':version_label' => 'Atualização ' . date('d/m/Y H:i'),
+                    ':payload' => $snapshot ?: '{}',
                 ]
             );
-        }
 
-        $this->persistSections($resumeId, $data);
-
-        $snapshot = json_encode($this->getDetailedByIdForUser($resumeId, $userId), JSON_UNESCAPED_UNICODE);
-        $this->db->execute(
-            'INSERT INTO resume_versions (resume_id, version_label, payload, created_at) VALUES (:resume_id, :version_label, :payload, NOW())',
-            [
-                ':resume_id' => $resumeId,
-                ':version_label' => 'Atualização ' . date('d/m/Y H:i'),
-                ':payload' => $snapshot ?: '{}',
-            ]
-        );
-
-        return $resumeId;
+            return $resumeId;
+        });
     }
 
     public function delete(int $resumeId, int $userId): void
@@ -173,15 +176,15 @@ class ResumeModel extends Model
             ['objective', 'Objetivo Profissional', (string) ($data['objective'] ?? '')],
             ['professional_summary', 'Resumo Profissional', (string) ($data['professional_summary'] ?? '')],
             ['personal_data', 'Dados Pessoais', (string) ($data['personal_data'] ?? '')],
-            ['experiences', 'Experiências', (string) ($data['experiences_raw'] ?? '')],
-            ['educations', 'Formação Acadêmica', (string) ($data['educations_raw'] ?? '')],
+            ['experiences', 'ExperiÃªncias', (string) ($data['experiences_raw'] ?? '')],
+            ['educations', 'FormaÃ§Ã£o AcadÃªmica', (string) ($data['educations_raw'] ?? '')],
             ['courses', 'Cursos', (string) ($data['courses_raw'] ?? '')],
             ['skills', 'Habilidades', (string) ($data['skills_raw'] ?? '')],
             ['languages', 'Idiomas', (string) ($data['languages_raw'] ?? '')],
-            ['certifications', 'Certificações', (string) ($data['certifications_raw'] ?? '')],
+            ['certifications', 'CertificaÃ§Ãµes', (string) ($data['certifications_raw'] ?? '')],
             ['projects', 'Projetos', (string) ($data['projects_raw'] ?? '')],
             ['professional_links', 'Links Profissionais', (string) ($data['links_raw'] ?? '')],
-            ['design_options', 'Configuração Visual', $designOptionsJson ?: '{}'],
+            ['design_options', 'ConfiguraÃ§Ã£o Visual', $designOptionsJson ?: '{}'],
         ];
 
         $order = 0;
@@ -369,6 +372,7 @@ class ResumeModel extends Model
 
         foreach ($rows as $row) {
             [$name, $role, $link, $description] = $this->splitParts($row, 4);
+            $link = $this->sanitizeExternalUrl($link);
             if ($name === '') {
                 continue;
             }
@@ -395,6 +399,7 @@ class ResumeModel extends Model
 
         foreach ($rows as $row) {
             [$label, $url] = $this->splitParts($row, 2);
+            $url = $this->sanitizeExternalUrl($url);
             if ($label === '' && $url === '') {
                 continue;
             }
@@ -491,4 +496,28 @@ class ResumeModel extends Model
 
         return array_slice($parts, 0, $count);
     }
+
+    private function sanitizeExternalUrl(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('/[\x00-\x1F\x7F]/', $value) === 1) {
+            return '';
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+            return '';
+        }
+
+        $scheme = strtolower((string) (parse_url($value, PHP_URL_SCHEME) ?? ''));
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            return '';
+        }
+
+        return mb_substr($value, 0, 500);
+    }
 }
+

@@ -15,7 +15,7 @@ Principais pontos do produto atual:
 - preset visual estilo LinkedIn como padrao
 - ocultacao automatica de campos/secoes vazias no curriculo final
 - personalizacao visual (fonte e cores)
-- exportacao em PDF (com Dompdf) e JSON estruturado
+- exportacao em PDF, DOCX e JSON estruturado
 - blocos de anuncios discretos na home
 - area publica de doacoes com configuracao via admin
 
@@ -52,7 +52,7 @@ Para habilitar geracao PDF com Dompdf:
 composer --working-dir=system install
 ```
 
-Se Dompdf nao estiver instalado, o sistema exibe HTML de fallback no endpoint de exportacao PDF.
+Sem Dompdf instalado, a exportacao PDF fica indisponivel e o sistema orienta a instalacao das dependencias.
 
 ## Estrutura do projeto
 
@@ -75,6 +75,7 @@ Se Dompdf nao estiver instalado, o sistema exibe HTML de fallback no endpoint de
 - [Rotas](docs/ROTAS.md)
 - [Banco de dados](docs/BANCO_DE_DADOS.md)
 - [Operacao administrativa](docs/OPERACAO_ADMIN.md)
+- [Qualidade e CI](docs/QUALIDADE.md)
 
 ## Observacoes
 

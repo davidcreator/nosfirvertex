@@ -41,6 +41,12 @@ class InstallerModel extends Model
                 'current' => extension_loaded('mbstring') ? 'Ativo' : 'Inativo',
                 'required' => 'Ativo',
             ],
+            [
+                'name' => 'DOM',
+                'status' => extension_loaded('dom'),
+                'current' => extension_loaded('dom') ? 'Ativo' : 'Inativo',
+                'required' => 'Ativo',
+            ],
         ];
     }
 

@@ -99,9 +99,9 @@ class UserModel extends Model
                 ':city' => trim((string) ($data['city'] ?? '')),
                 ':state' => trim((string) ($data['state'] ?? '')),
                 ':country' => trim((string) ($data['country'] ?? '')),
-                ':website' => trim((string) ($data['website'] ?? '')),
-                ':linkedin' => trim((string) ($data['linkedin'] ?? '')),
-                ':github' => trim((string) ($data['github'] ?? '')),
+                ':website' => $this->sanitizeOptionalUrl((string) ($data['website'] ?? '')),
+                ':linkedin' => $this->sanitizeOptionalUrl((string) ($data['linkedin'] ?? '')),
+                ':github' => $this->sanitizeOptionalUrl((string) ($data['github'] ?? '')),
                 ':user_id' => $userId,
             ]
         );
@@ -123,24 +123,134 @@ class UserModel extends Model
             return null;
         }
 
-        $user = $this->db->fetch('SELECT user_id FROM users WHERE email = :email LIMIT 1', [
-            ':email' => mb_strtolower(trim($email)),
-        ]);
+        $normalizedEmail = mb_strtolower(trim($email));
+        $user = $this->db->fetch(
+            'SELECT user_id, email FROM users WHERE email = :email AND status = :status LIMIT 1',
+            [
+                ':email' => $normalizedEmail,
+                ':status' => 'active',
+            ]
+        );
 
         if ($user === null) {
             return null;
         }
 
-        $token = bin2hex(random_bytes(20));
+        $tokenPlain = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $tokenPlain);
+        $userId = (int) ($user['user_id'] ?? 0);
 
-        $this->db->execute(
-            'INSERT INTO password_resets (user_id, token, expires_at, created_at) VALUES (:user_id, :token, DATE_ADD(NOW(), INTERVAL 1 HOUR), NOW())',
-            [
-                ':user_id' => (int) $user['user_id'],
-                ':token' => $token,
-            ]
-        );
+        $this->db->transaction(function () use ($userId, $tokenHash): void {
+            $this->db->execute(
+                'UPDATE password_resets SET used_at = NOW() WHERE user_id = :user_id AND used_at IS NULL',
+                [':user_id' => $userId]
+            );
 
-        return $token;
+            $this->db->execute(
+                'INSERT INTO password_resets (user_id, token, expires_at, created_at) VALUES (:user_id, :token, DATE_ADD(NOW(), INTERVAL 1 HOUR), NOW())',
+                [
+                    ':user_id' => $userId,
+                    ':token' => $tokenHash,
+                ]
+            );
+        });
+
+        return $tokenPlain;
+    }
+
+    public function isPasswordResetTokenValid(string $token): bool
+    {
+        return $this->findActivePasswordResetByToken($token) !== null;
+    }
+
+    public function resetPasswordByToken(string $token, string $newPassword): bool
+    {
+        if ($this->db === null || !$this->isPasswordResetTokenFormat($token)) {
+            return false;
+        }
+
+        return $this->db->transaction(function () use ($token, $newPassword): bool {
+            $reset = $this->findActivePasswordResetByToken($token, true);
+            if ($reset === null) {
+                return false;
+            }
+
+            $userId = (int) ($reset['user_id'] ?? 0);
+            $resetId = (int) ($reset['password_reset_id'] ?? 0);
+
+            if ($userId <= 0 || $resetId <= 0) {
+                return false;
+            }
+
+            $this->db->execute(
+                'UPDATE users SET password_hash = :password_hash, updated_at = NOW() WHERE user_id = :user_id',
+                [
+                    ':password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+                    ':user_id' => $userId,
+                ]
+            );
+
+            $this->db->execute(
+                'UPDATE password_resets SET used_at = NOW() WHERE user_id = :user_id AND used_at IS NULL',
+                [':user_id' => $userId]
+            );
+
+            return true;
+        });
+    }
+
+    private function findActivePasswordResetByToken(string $token, bool $forUpdate = false): array|null
+    {
+        if ($this->db === null || !$this->isPasswordResetTokenFormat($token)) {
+            return null;
+        }
+
+        $normalized = strtolower(trim($token));
+        $tokenHash = hash('sha256', $normalized);
+
+        $sql = 'SELECT password_reset_id, user_id
+                FROM password_resets
+                WHERE (token = :token_hash OR token = :token_legacy)
+                  AND used_at IS NULL
+                  AND expires_at >= NOW()
+                ORDER BY password_reset_id DESC
+                LIMIT 1';
+
+        if ($forUpdate) {
+            $sql .= ' FOR UPDATE';
+        }
+
+        return $this->db->fetch($sql, [
+            ':token_hash' => $tokenHash,
+            ':token_legacy' => $normalized,
+        ]);
+    }
+
+    private function isPasswordResetTokenFormat(string $token): bool
+    {
+        return preg_match('/^[a-f0-9]{40,128}$/i', trim($token)) === 1;
+    }
+
+    private function sanitizeOptionalUrl(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('/[\x00-\x1F\x7F]/', $value) === 1) {
+            return '';
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+            return '';
+        }
+
+        $scheme = strtolower((string) (parse_url($value, PHP_URL_SCHEME) ?? ''));
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            return '';
+        }
+
+        return mb_substr($value, 0, 255);
     }
 }

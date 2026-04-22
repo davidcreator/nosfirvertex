@@ -1,0 +1,16 @@
+# Local config with credentials
+/system/config/installed.php
+
+# Runtime storage
+/system/storage/logs/*
+!/system/storage/logs/.gitkeep
+/system/storage/sessions/*
+!/system/storage/sessions/.gitkeep
+/system/storage/docx_inspect/
+/system/storage/*.bin
+
+# OS / editor
+/.idea/
+/.vscode/
+Thumbs.db
+.DS_Store

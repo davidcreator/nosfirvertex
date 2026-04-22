@@ -1,0 +1,18 @@
+parameters:
+  level: 0
+  paths:
+    - admin/controller
+    - admin/model
+    - catalog/controller
+    - catalog/model
+    - install/controller
+    - install/model
+    - system/engine
+    - system/helper
+    - system/library
+  excludePaths:
+    analyse:
+      - system/vendor/*
+      - system/storage/*
+  bootstrapFiles:
+    - system/bootstrap.php

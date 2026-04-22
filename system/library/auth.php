@@ -31,6 +31,8 @@ class Auth
             return false;
         }
 
+        $this->session->regenerateId();
+
         $this->session->set($this->sessionKey(), [
             'user_id' => (int) $user['user_id'],
             'full_name' => $user['full_name'],
@@ -67,6 +69,7 @@ class Auth
     public function logout(): void
     {
         $this->session->remove($this->sessionKey());
+        $this->session->regenerateId();
     }
 
     private function sessionKey(): string

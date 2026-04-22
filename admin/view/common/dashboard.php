@@ -1,6 +1,6 @@
 <section class="card">
     <h1>Dashboard administrativo</h1>
-    <p class="muted">Visão geral do sistema NosfirVertex.</p>
+    <p class="muted">Visão geral do sistema Vertex.</p>
 </section>
 
 <section class="grid cols-3">

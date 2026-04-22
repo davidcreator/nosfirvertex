@@ -28,6 +28,28 @@ $sanitizeHexColor = static function (string $value): string|null {
     return strtolower($value);
 };
 
+$safeExternalHref = static function (string $value): string {
+    $value = trim($value);
+    if ($value === '') {
+        return '';
+    }
+
+    if (preg_match('/[\x00-\x1F\x7F]/', $value) === 1) {
+        return '';
+    }
+
+    if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+        return '';
+    }
+
+    $scheme = strtolower((string) (parse_url($value, PHP_URL_SCHEME) ?? ''));
+    if (!in_array($scheme, ['http', 'https'], true)) {
+        return '';
+    }
+
+    return $value;
+};
+
 $personalLines = $splitLines((string) ($resume['personal_data'] ?? ''));
 $headlineParts = [];
 if (!empty($personalLines)) {
@@ -403,6 +425,7 @@ $fontBody = $fontMap[$templateCategory] ?? $fontMap['basico'];
         <a class="button" href="<?= e(base_url('catalog/index.php?route=resume/edit/' . (int) ($resume['resume_id'] ?? 0))) ?>">Editar</a>
         <a class="button" href="<?= e(base_url('catalog/index.php?route=resume/export/browser/' . (int) ($resume['resume_id'] ?? 0))) ?>" target="_blank" rel="noopener noreferrer">Visualizar no navegador</a>
         <a class="button primary" href="<?= e(base_url('catalog/index.php?route=resume/export/pdf/' . (int) ($resume['resume_id'] ?? 0))) ?>">Exportar PDF</a>
+        <a class="button" href="<?= e(base_url('catalog/index.php?route=resume/export/docx/' . (int) ($resume['resume_id'] ?? 0))) ?>">Exportar DOCX</a>
         <a class="button" href="<?= e(base_url('catalog/index.php?route=resume/export/json/' . (int) ($resume['resume_id'] ?? 0))) ?>">Exportar JSON</a>
         <form method="post" action="<?= e(base_url('catalog/index.php?route=resume/delete/' . (int) ($resume['resume_id'] ?? 0))) ?>" onsubmit="return confirm('Excluir este currículo?');">
             <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
@@ -559,7 +582,12 @@ $fontBody = $fontMap[$templateCategory] ?? $fontMap['basico'];
                                 <p class="resume-text"><?= nl2br(e((string) $item['description'])) ?></p>
                             <?php endif; ?>
                             <?php if ($item['link'] !== ''): ?>
-                                <p class="resume-text"><a class="resume-link" href="<?= e((string) $item['link']) ?>" target="_blank" rel="noopener noreferrer"><?= e((string) $item['link']) ?></a></p>
+                                <?php $projectHref = $safeExternalHref((string) $item['link']); ?>
+                                <?php if ($projectHref !== ''): ?>
+                                    <p class="resume-text"><a class="resume-link" href="<?= e($projectHref) ?>" target="_blank" rel="noopener noreferrer"><?= e((string) $item['link']) ?></a></p>
+                                <?php else: ?>
+                                    <p class="resume-text"><?= e((string) $item['link']) ?></p>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </article>
                     <?php endforeach; ?>
@@ -575,7 +603,12 @@ $fontBody = $fontMap[$templateCategory] ?? $fontMap['basico'];
                                 <?php if ($item['label'] !== ''): ?>
                                     <?= e((string) $item['label']) ?>:
                                 <?php endif; ?>
-                                <a class="resume-link" href="<?= e((string) $item['url']) ?>" target="_blank" rel="noopener noreferrer"><?= e((string) $item['url']) ?></a>
+                                <?php $profileHref = $safeExternalHref((string) $item['url']); ?>
+                                <?php if ($profileHref !== ''): ?>
+                                    <a class="resume-link" href="<?= e($profileHref) ?>" target="_blank" rel="noopener noreferrer"><?= e((string) $item['url']) ?></a>
+                                <?php else: ?>
+                                    <?= e((string) $item['url']) ?>
+                                <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

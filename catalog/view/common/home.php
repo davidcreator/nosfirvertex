@@ -1,6 +1,6 @@
 <section class="card">
     <h1><i class="fa-solid fa-file-lines"></i> Crie currículos profissionais de forma rápida e gratuita</h1>
-    <p class="muted">NosfirVertex foi desenhado para funcionar muito bem em celular, com experiência simples, responsiva e orientada para quem busca recolocação profissional.</p>
+    <p class="muted">Vertex foi desenhado para funcionar muito bem em celular, com experiência simples, responsiva e orientada para quem busca recolocação profissional.</p>
     <div class="grid cols-2">
         <a class="button primary" href="<?= e(base_url('catalog/index.php?route=register')) ?>"><i class="fa-solid fa-user-plus"></i> Criar conta grátis</a>
         <a class="button" href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Ver modelos</a>
@@ -12,14 +12,14 @@
         <h2>Parceiros</h2>
         <?php foreach ($ads_top as $ad): ?>
             <article class="card" style="margin-bottom:8px;">
-                <?= strip_tags((string) $ad['content_html'], '<div><strong><em><a><p><span><br>') ?>
+                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
             </article>
         <?php endforeach; ?>
     </section>
 <?php endif; ?>
 
 <section class="card">
-    <h2>Por que usar o NosfirVertex?</h2>
+    <h2>Por que usar o Vertex?</h2>
     <div class="grid cols-2">
         <article class="card">
             <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Preenchimento assistido</h3>
@@ -42,7 +42,7 @@
 
 <section class="card">
     <h2><i class="fa-solid fa-hand-holding-heart"></i> Gostou da plataforma?</h2>
-    <p class="muted">O NosfirVertex é gratuito. Se quiser ajudar com a continuidade do projeto, você pode contribuir de forma voluntária.</p>
+    <p class="muted">O Vertex é gratuito. Se quiser ajudar com a continuidade do projeto, você pode contribuir de forma voluntária.</p>
     <a class="button" href="<?= e(base_url('catalog/index.php?route=doacoes')) ?>"><i class="fa-solid fa-gift"></i> Apoiar com doação</a>
 </section>
 
@@ -65,7 +65,7 @@
     <section class="card">
         <?php foreach ($ads_mid as $ad): ?>
             <article class="card" style="margin-bottom:8px;">
-                <?= strip_tags((string) $ad['content_html'], '<div><strong><em><a><p><span><br>') ?>
+                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
             </article>
         <?php endforeach; ?>
     </section>
@@ -85,7 +85,7 @@
     <section class="card">
         <?php foreach ($ads_footer as $ad): ?>
             <article class="card" style="margin-bottom:8px;">
-                <?= strip_tags((string) $ad['content_html'], '<div><strong><em><a><p><span><br>') ?>
+                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
             </article>
         <?php endforeach; ?>
     </section>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'NosfirVertex') ?></title>
+    <title><?= e($app_name ?? 'Vertex') ?></title>
     <link rel="stylesheet" href="<?= e(base_url('catalog/view/css/fonts/fontawesome/css/all.min.css')) ?>">
     <style>
         :root {
@@ -83,6 +83,10 @@
             gap: 8px;
         }
 
+        .menu form {
+            margin: 0;
+        }
+
         .menu a, .menu button {
             background: transparent;
             border: 1px solid var(--border);
@@ -96,7 +100,8 @@
             gap: 6px;
         }
 
-        .menu a.primary {
+        .menu a.primary,
+        .menu button.primary {
             background: var(--primary);
             color: #fff;
             border-color: transparent;
@@ -219,7 +224,7 @@
 <body>
 <div class="shell">
     <nav class="nav">
-        <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">NosfirVertex</a></div>
+        <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">Vertex</a></div>
         <div class="menu">
             <a href="<?= e(base_url('catalog/index.php')) ?>"><i class="fa-solid fa-house"></i> Início</a>
             <a href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Templates</a>
@@ -228,12 +233,18 @@
                 <a href="<?= e(base_url('catalog/index.php?route=dashboard')) ?>"><i class="fa-solid fa-table-columns"></i> Painel</a>
                 <a href="<?= e(base_url('catalog/index.php?route=resume/create')) ?>" class="primary"><i class="fa-solid fa-file-circle-plus"></i> Novo currículo</a>
                 <a href="<?= e(base_url('catalog/index.php?route=account/settings')) ?>"><i class="fa-solid fa-user-gear"></i> Conta</a>
-                <a href="<?= e(base_url('catalog/index.php?route=logout')) ?>"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+                <form method="post" action="<?= e(base_url('catalog/index.php?route=logout')) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
+                    <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                </form>
             <?php else: ?>
                 <a href="<?= e(base_url('catalog/index.php?route=login')) ?>"><i class="fa-solid fa-right-to-bracket"></i> Entrar</a>
                 <a href="<?= e(base_url('catalog/index.php?route=register')) ?>" class="primary"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
             <?php endif; ?>
-            <a href="<?= e(base_url('catalog/index.php?route=theme/toggle')) ?>"><i class="fa-solid fa-circle-half-stroke"></i> Tema</a>
+            <form method="post" action="<?= e(base_url('catalog/index.php?route=theme/toggle')) ?>">
+                <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
+                <button type="submit"><i class="fa-solid fa-circle-half-stroke"></i> Tema</button>
+            </form>
         </div>
     </nav>
 
@@ -248,11 +259,10 @@
     <?= $content ?>
 
     <footer>
-        NosfirVertex • Plataforma gratuita para criação e exportação de currículos.
+        Vertex • Plataforma gratuita para criação e exportação de currículos.
     </footer>
 </div>
 <script src="<?= e(base_url('catalog/view/js/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>
 <script src="<?= e(base_url('catalog/view/js/modal-fix.js')) ?>"></script>
 </body>
 </html>
-
