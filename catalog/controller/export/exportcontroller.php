@@ -16,11 +16,11 @@ class ExportController extends Controller
         $resume = $this->getResumeOrRedirect($resumeId);
 
         if (!class_exists('\Dompdf\Dompdf')) {
-            $this->logger->warning('Exportacao PDF indisponivel: Dompdf ausente', [
+            $this->logger->warning($this->lang('Exportação PDF indisponível: Dompdf ausente'), [
                 'resume_id' => $resumeId,
             ]);
 
-            $this->flash('error', 'Exportacao PDF indisponivel. Execute composer install no diretorio system.');
+            $this->flash('error', $this->lang('Exportação PDF indisponível. Execute composer install no diretório system.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -29,19 +29,20 @@ class ExportController extends Controller
         try {
             $pdfBinary = $this->renderPdfBinary($html);
         } catch (\Throwable $exception) {
-            $this->logger->error('Falha ao gerar PDF do curriculo', [
+            $this->logger->error($this->lang('Falha ao gerar PDF do currículo'), [
                 'resume_id' => $resumeId,
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->flash('error', 'Falha ao gerar PDF. Tente novamente.');
+            $this->flash('error', $this->lang('Falha ao gerar PDF. Tente novamente.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
         $this->prepareBinaryStream();
+        $pdfFilename = $this->buildPdfFilename($resume, $resumeId);
 
         $this->response->addHeader('Content-Type: application/pdf');
-        $this->response->addHeader('Content-Disposition: attachment; filename="curriculo-' . $resumeId . '.pdf"');
+        $this->response->addHeader('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
         $this->response->addHeader('Content-Transfer-Encoding: binary');
         $this->response->addHeader('Cache-Control: private, max-age=0, must-revalidate');
         $this->response->addHeader('Pragma: public');
@@ -58,23 +59,23 @@ class ExportController extends Controller
         $resume = $this->getResumeOrRedirect($resumeId);
 
         if (!class_exists('\ZipArchive')) {
-            $this->logger->warning('Exportacao DOCX indisponivel: ZipArchive ausente', [
+            $this->logger->warning($this->lang('Exportação DOCX indisponível: ZipArchive ausente'), [
                 'resume_id' => $resumeId,
             ]);
 
-            $this->flash('error', 'Exportacao DOCX indisponivel. Habilite a extensao ZIP do PHP.');
+            $this->flash('error', $this->lang('Exportação DOCX indisponível. Habilite a extensão ZIP do PHP.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
         try {
             $docxBinary = $this->renderDocxBinary($resume);
         } catch (\Throwable $exception) {
-            $this->logger->error('Falha ao gerar DOCX do curriculo', [
+            $this->logger->error($this->lang('Falha ao gerar DOCX do currículo'), [
                 'resume_id' => $resumeId,
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->flash('error', 'Falha ao gerar DOCX. Tente novamente.');
+            $this->flash('error', $this->lang('Falha ao gerar DOCX. Tente novamente.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -110,21 +111,21 @@ class ExportController extends Controller
 
         if ($resume === null) {
             $this->response->addHeader('Content-Type: application/json; charset=utf-8');
-            return json_encode(['error' => 'Curriculo nao encontrado.'], JSON_UNESCAPED_UNICODE);
+            return json_encode(['error' => $this->lang('Currículo não encontrado.')], JSON_UNESCAPED_UNICODE);
         }
 
         $payload = [
-            'platform' => 'Vertex',
+            'platform' => $this->lang('Vertex'),
             'exported_at' => date(DATE_ATOM),
             'resume' => $resume,
             'integration_ready' => [
                 'linkedin' => [
                     'status' => 'ready_for_manual_mapping',
-                    'note' => 'Estrutura pronta para futura API oficial do LinkedIn.',
+                    'note' => $this->lang('Estrutura pronta para futura API oficial do LinkedIn.'),
                 ],
                 'facebook' => [
                     'status' => 'ready_for_manual_mapping',
-                    'note' => 'Estrutura pronta para compartilhamento e integracoes futuras.',
+                    'note' => $this->lang('Estrutura pronta para compartilhamento e integrações futuras.'),
                 ],
             ],
         ];
@@ -138,7 +139,7 @@ class ExportController extends Controller
     private function ensureAuth(): void
     {
         if (!$this->auth->check()) {
-            $this->flash('error', 'Faca login para exportar curriculos.');
+            $this->flash('error', $this->lang('Faça login para exportar currículos.'));
             $this->redirect('catalog/index.php?route=login');
         }
     }
@@ -149,11 +150,59 @@ class ExportController extends Controller
         $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
 
         if ($resume === null) {
-            $this->flash('error', 'Curriculo nao encontrado para exportacao.');
+            $this->flash('error', $this->lang('Currículo não encontrado para exportação.'));
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
         return $resume;
+    }
+
+    private function buildPdfFilename(array $resume, int $resumeId): string
+    {
+        $fallback = 'curriculo-' . $resumeId . '.pdf';
+        $name = $this->extractResumeDisplayName($resume);
+        if ($name === '') {
+            return $fallback;
+        }
+
+        $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        if (!is_string($ascii) || trim($ascii) === '') {
+            $ascii = $name;
+        }
+
+        $slug = strtolower($ascii);
+        $slug = (string) preg_replace('/[^a-z0-9]+/', '-', $slug);
+        $slug = trim($slug, '-');
+        if ($slug === '') {
+            return $fallback;
+        }
+
+        if (strlen($slug) > 80) {
+            $slug = substr($slug, 0, 80);
+            $slug = rtrim($slug, '-');
+        }
+
+        return 'curriculo-' . $slug . '.pdf';
+    }
+
+    private function extractResumeDisplayName(array $resume): string
+    {
+        $personalData = trim((string) ($resume['personal_data'] ?? ''));
+        if ($personalData !== '') {
+            $lines = preg_split('/\r\n|\r|\n/', $personalData) ?: [];
+            $firstLine = trim((string) ($lines[0] ?? ''));
+            if ($firstLine !== '') {
+                $parts = array_values(array_filter(
+                    array_map('trim', explode('|', $firstLine)),
+                    static fn (string $value): bool => $value !== ''
+                ));
+                if (!empty($parts)) {
+                    return (string) $parts[0];
+                }
+            }
+        }
+
+        return trim((string) ($resume['title'] ?? ''));
     }
 
     private function renderPdfBinary(string $html): string
@@ -175,17 +224,17 @@ class ExportController extends Controller
     {
         $zipPath = tempnam(sys_get_temp_dir(), 'resume_docx_');
         if ($zipPath === false) {
-            throw new \RuntimeException('Nao foi possivel preparar arquivo temporario DOCX.');
+            throw new \RuntimeException($this->lang('Não foi possível preparar arquivo temporário DOCX.'));
         }
 
         $zip = new \ZipArchive();
         $openResult = $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         if ($openResult !== true) {
             @unlink($zipPath);
-            throw new \RuntimeException('Nao foi possivel abrir ZIP para DOCX.');
+            throw new \RuntimeException($this->lang('Não foi possível abrir ZIP para DOCX.'));
         }
 
-        $title = trim((string) ($resume['title'] ?? 'Curriculo'));
+        $title = trim((string) ($resume['title'] ?? $this->lang('Currículo')));
         $nowIso = gmdate('Y-m-d\TH:i:s\Z');
 
         $zip->addFromString('[Content_Types].xml', $this->buildDocxContentTypesXml());
@@ -202,7 +251,7 @@ class ExportController extends Controller
         @unlink($zipPath);
 
         if ($binary === false || $binary === '') {
-            throw new \RuntimeException('Nao foi possivel obter binario DOCX.');
+            throw new \RuntimeException($this->lang('Não foi possível obter binário DOCX.'));
         }
 
         return $binary;
@@ -233,7 +282,7 @@ class ExportController extends Controller
 
     private function buildDocxCorePropsXml(string $title, string $nowIso): string
     {
-        $safeTitle = $this->xmlText($title !== '' ? $title : 'Curriculo');
+        $safeTitle = $this->xmlText($title !== '' ? $title : $this->lang('Currículo'));
 
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             . '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"'
@@ -327,7 +376,7 @@ class ExportController extends Controller
         [$displayName, $contactItems] = $this->extractIdentity($resume);
         $entries = [];
 
-        $title = trim((string) ($resume['title'] ?? 'Curriculo profissional'));
+        $title = trim((string) ($resume['title'] ?? $this->lang('Currículo profissional')));
         if ($displayName !== '') {
             $entries[] = ['text' => $displayName, 'heading' => true];
         }
@@ -342,7 +391,7 @@ class ExportController extends Controller
 
         $summary = trim((string) ($resume['professional_summary'] ?? ''));
         if ($summary !== '') {
-            $entries[] = ['text' => 'Resumo profissional', 'heading' => true];
+            $entries[] = ['text' => $this->lang('Resumo profissional'), 'heading' => true];
             foreach ($this->splitLines($summary) as $line) {
                 $entries[] = ['text' => $line, 'heading' => false];
             }
@@ -351,7 +400,7 @@ class ExportController extends Controller
 
         $objective = trim((string) ($resume['objective'] ?? ''));
         if ($objective !== '') {
-            $entries[] = ['text' => 'Objetivo profissional', 'heading' => true];
+            $entries[] = ['text' => $this->lang('Objetivo profissional'), 'heading' => true];
             foreach ($this->splitLines($objective) as $line) {
                 $entries[] = ['text' => $line, 'heading' => false];
             }
@@ -374,7 +423,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Experiencia profissional', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Experiência profissional'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -383,7 +432,7 @@ class ExportController extends Controller
                     $entries[] = ['text' => $headline, 'heading' => false];
                 }
                 if ($period !== '') {
-                    $entries[] = ['text' => 'Periodo: ' . $period, 'heading' => false];
+                    $entries[] = ['text' => $this->lang('Período: {period}', ['period' => $period]), 'heading' => false];
                 }
 
                 foreach ($this->toBullets($description) as $bullet) {
@@ -410,7 +459,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Formacao academica', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Formação acadêmica'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -419,7 +468,7 @@ class ExportController extends Controller
                     $entries[] = ['text' => $headline, 'heading' => false];
                 }
                 if ($period !== '') {
-                    $entries[] = ['text' => 'Periodo: ' . $period, 'heading' => false];
+                    $entries[] = ['text' => $this->lang('Período: {period}', ['period' => $period]), 'heading' => false];
                 }
                 if ($description !== '') {
                     foreach ($this->splitLines($description) as $line) {
@@ -433,14 +482,14 @@ class ExportController extends Controller
 
         $this->appendSimplePairsSection(
             $entries,
-            'Habilidades',
+            $this->lang('Habilidades'),
             is_array($resume['skills'] ?? null) ? $resume['skills'] : [],
             'skill',
             'level'
         );
         $this->appendSimplePairsSection(
             $entries,
-            'Idiomas',
+            $this->lang('Idiomas'),
             is_array($resume['languages'] ?? null) ? $resume['languages'] : [],
             'language',
             'level'
@@ -457,7 +506,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Certificacoes', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Certificações'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -482,7 +531,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Cursos', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Cursos'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -515,7 +564,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Projetos', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Projetos'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -523,7 +572,7 @@ class ExportController extends Controller
                     $entries[] = ['text' => $name, 'heading' => false];
                 }
                 if ($role !== '') {
-                    $entries[] = ['text' => 'Funcao: ' . $role, 'heading' => false];
+                    $entries[] = ['text' => $this->lang('Função: {role}', ['role' => $role]), 'heading' => false];
                 }
                 if ($description !== '') {
                     foreach ($this->splitLines($description) as $line) {
@@ -531,7 +580,7 @@ class ExportController extends Controller
                     }
                 }
                 if ($link !== '') {
-                    $entries[] = ['text' => 'Link: ' . $link, 'heading' => false];
+                    $entries[] = ['text' => $this->lang('Link: {link}', ['link' => $link]), 'heading' => false];
                 }
 
                 $entries[] = ['text' => '', 'heading' => false];
@@ -549,7 +598,7 @@ class ExportController extends Controller
                 }
 
                 if (!$addedHeader) {
-                    $entries[] = ['text' => 'Links profissionais', 'heading' => true];
+                    $entries[] = ['text' => $this->lang('Links profissionais'), 'heading' => true];
                     $addedHeader = true;
                 }
 
@@ -611,9 +660,9 @@ class ExportController extends Controller
             ));
         }
 
-        $displayName = $headlineParts[0] ?? trim((string) ($resume['title'] ?? 'Curriculo profissional'));
+        $displayName = $headlineParts[0] ?? trim((string) ($resume['title'] ?? $this->lang('Currículo profissional')));
         if ($displayName === '') {
-            $displayName = 'Curriculo profissional';
+            $displayName = $this->lang('Currículo profissional');
         }
 
         $contactItems = [];
@@ -660,7 +709,7 @@ class ExportController extends Controller
         }
 
         if ($allowCurrentEnd && $start !== '' && $end === '') {
-            return $start . ' - Atual';
+            return $start . ' - ' . $this->lang('Atual');
         }
 
         if ($start !== '' && $end !== '') {

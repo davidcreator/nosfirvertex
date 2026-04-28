@@ -16,14 +16,14 @@ class DonationController extends Controller
 
         return $this->page('common/donate', [
             'donation_enabled' => $donationEnabled,
-            'donation_title' => $settingModel->get('donation_title', 'Apoie o Projeto Vertex'),
+            'donation_title' => $settingModel->get('donation_title', $this->lang('Apoie o Projeto Vertex')),
             'donation_message' => $settingModel->get(
                 'donation_message',
-                'Se o Projeto Vertex te ajudou, você pode contribuir de forma voluntária para manter o projeto online.'
+                $this->lang('Se o Projeto Vertex te ajudou, você pode contribuir de forma voluntária para manter o projeto online.')
             ),
             'donation_goal_text' => $settingModel->get(
                 'donation_goal_text',
-                'As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.'
+                $this->lang('As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.')
             ),
             'donation_pix_key' => $settingModel->get('donation_pix_key', ''),
             'donation_pix_beneficiary' => $settingModel->get('donation_pix_beneficiary', 'Nosfir'),
@@ -32,7 +32,7 @@ class DonationController extends Controller
             'donation_qr_image' => $settingModel->get('donation_qr_image', ''),
             'donation_thanks_message' => $settingModel->get(
                 'donation_thanks_message',
-                'Obrigado pelo apoio. Toda contribuição faz diferença para manter a plataforma gratuita.'
+                $this->lang('Obrigado pelo apoio. Toda contribuição faz diferença para manter a plataforma gratuita.')
             ),
         ]);
     }

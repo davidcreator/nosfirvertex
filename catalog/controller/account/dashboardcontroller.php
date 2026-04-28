@@ -23,7 +23,7 @@ class DashboardController extends Controller
     private function ensureAuth(): void
     {
         if (!$this->auth->check()) {
-            $this->flash('error', 'Faça login para acessar o painel.');
+            $this->flash('error', $this->lang('Faça login para acessar o painel.'));
             $this->redirect('catalog/index.php?route=login');
         }
     }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="<?= e($theme ?? 'light') ?>">
+<html lang="<?= e($html_lang ?? html_lang()) ?>" data-theme="<?= e($theme ?? 'light') ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -222,28 +222,35 @@
     </style>
 </head>
 <body>
+<?php
+$localeOptions = is_array($available_locales ?? null) ? $available_locales : available_locales();
+$activeLocale = (string) ($current_locale ?? current_locale());
+?>
 <div class="shell">
     <nav class="nav">
         <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">Vertex</a></div>
         <div class="menu">
-            <a href="<?= e(base_url('catalog/index.php')) ?>"><i class="fa-solid fa-house"></i> Início</a>
-            <a href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Templates</a>
-            <a href="<?= e(base_url('catalog/index.php?route=doacoes')) ?>"><i class="fa-solid fa-hand-holding-heart"></i> Doações</a>
+            <?php foreach ($localeOptions as $localeCode): ?>
+                <a href="<?= e(locale_switch_url((string) $localeCode)) ?>"<?= $activeLocale === (string) $localeCode ? ' class="primary"' : '' ?>><?= e(strtoupper((string) $localeCode)) ?></a>
+            <?php endforeach; ?>
+            <a href="<?= e(base_url('catalog/index.php')) ?>"><i class="fa-solid fa-house"></i> <?= e(lang('Início')) ?></a>
+            <a href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> <?= e(lang('Templates')) ?></a>
+            <a href="<?= e(base_url('catalog/index.php?route=doacoes')) ?>"><i class="fa-solid fa-hand-holding-heart"></i> <?= e(lang('Doações')) ?></a>
             <?php if (!empty($auth_user)): ?>
-                <a href="<?= e(base_url('catalog/index.php?route=dashboard')) ?>"><i class="fa-solid fa-table-columns"></i> Painel</a>
-                <a href="<?= e(base_url('catalog/index.php?route=resume/create')) ?>" class="primary"><i class="fa-solid fa-file-circle-plus"></i> Novo currículo</a>
-                <a href="<?= e(base_url('catalog/index.php?route=account/settings')) ?>"><i class="fa-solid fa-user-gear"></i> Conta</a>
+                <a href="<?= e(base_url('catalog/index.php?route=dashboard')) ?>"><i class="fa-solid fa-table-columns"></i> <?= e(lang('Painel')) ?></a>
+                <a href="<?= e(base_url('catalog/index.php?route=resume/create')) ?>" class="primary"><i class="fa-solid fa-file-circle-plus"></i> <?= e(lang('Novo currículo')) ?></a>
+                <a href="<?= e(base_url('catalog/index.php?route=account/settings')) ?>"><i class="fa-solid fa-user-gear"></i> <?= e(lang('Conta')) ?></a>
                 <form method="post" action="<?= e(base_url('catalog/index.php?route=logout')) ?>">
                     <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
-                    <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                    <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> <?= e(lang('Sair')) ?></button>
                 </form>
             <?php else: ?>
-                <a href="<?= e(base_url('catalog/index.php?route=login')) ?>"><i class="fa-solid fa-right-to-bracket"></i> Entrar</a>
-                <a href="<?= e(base_url('catalog/index.php?route=register')) ?>" class="primary"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <a href="<?= e(base_url('catalog/index.php?route=login')) ?>"><i class="fa-solid fa-right-to-bracket"></i> <?= e(lang('Entrar')) ?></a>
+                <a href="<?= e(base_url('catalog/index.php?route=register')) ?>" class="primary"><i class="fa-solid fa-user-plus"></i> <?= e(lang('Cadastrar')) ?></a>
             <?php endif; ?>
             <form method="post" action="<?= e(base_url('catalog/index.php?route=theme/toggle')) ?>">
                 <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
-                <button type="submit"><i class="fa-solid fa-circle-half-stroke"></i> Tema</button>
+                <button type="submit"><i class="fa-solid fa-circle-half-stroke"></i> <?= e(lang('Tema')) ?></button>
             </form>
         </div>
     </nav>
@@ -259,7 +266,7 @@
     <?= $content ?>
 
     <footer>
-        Vertex • Plataforma gratuita para criação e exportação de currículos.
+        <?= e(lang('Vertex • Plataforma gratuita para criação e exportação de currículos.')) ?>
     </footer>
 </div>
 <script src="<?= e(base_url('catalog/view/js/bootstrap/js/bootstrap.bundle.min.js')) ?>"></script>

@@ -176,15 +176,15 @@ class ResumeModel extends Model
             ['objective', 'Objetivo Profissional', (string) ($data['objective'] ?? '')],
             ['professional_summary', 'Resumo Profissional', (string) ($data['professional_summary'] ?? '')],
             ['personal_data', 'Dados Pessoais', (string) ($data['personal_data'] ?? '')],
-            ['experiences', 'ExperiÃªncias', (string) ($data['experiences_raw'] ?? '')],
-            ['educations', 'FormaÃ§Ã£o AcadÃªmica', (string) ($data['educations_raw'] ?? '')],
+            ['experiences', 'Experiências', (string) ($data['experiences_raw'] ?? '')],
+            ['educations', 'Formação Acadêmica', (string) ($data['educations_raw'] ?? '')],
             ['courses', 'Cursos', (string) ($data['courses_raw'] ?? '')],
             ['skills', 'Habilidades', (string) ($data['skills_raw'] ?? '')],
             ['languages', 'Idiomas', (string) ($data['languages_raw'] ?? '')],
-            ['certifications', 'CertificaÃ§Ãµes', (string) ($data['certifications_raw'] ?? '')],
+            ['certifications', 'Certificações', (string) ($data['certifications_raw'] ?? '')],
             ['projects', 'Projetos', (string) ($data['projects_raw'] ?? '')],
             ['professional_links', 'Links Profissionais', (string) ($data['links_raw'] ?? '')],
-            ['design_options', 'ConfiguraÃ§Ã£o Visual', $designOptionsJson ?: '{}'],
+            ['design_options', 'Configuração Visual', $designOptionsJson ?: '{}'],
         ];
 
         $order = 0;
@@ -449,6 +449,7 @@ class ResumeModel extends Model
             'font_size' => 11,
             'accent_color' => '#0a66c2',
             'header_bg_color' => '#f3f8fd',
+            'header_text_color' => '#1f2937',
             'text_color' => '#1f2937',
         ];
     }
@@ -466,6 +467,9 @@ class ResumeModel extends Model
             'font_size' => $fontSize,
             'accent_color' => $this->sanitizeHexColor((string) ($data['accent_color'] ?? '')) ?? $defaults['accent_color'],
             'header_bg_color' => $this->sanitizeHexColor((string) ($data['header_bg_color'] ?? '')) ?? $defaults['header_bg_color'],
+            'header_text_color' => $this->sanitizeHexColor((string) ($data['header_text_color'] ?? ''))
+                ?? $this->sanitizeHexColor((string) ($data['text_color'] ?? ''))
+                ?? $defaults['header_text_color'],
             'text_color' => $this->sanitizeHexColor((string) ($data['text_color'] ?? '')) ?? $defaults['text_color'],
         ];
     }

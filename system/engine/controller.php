@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NosfirVertex\System\Engine;
 
+use NosfirVertex\System\Library\Language;
+
 abstract class Controller
 {
     public function __construct(protected readonly Registry $registry)
@@ -29,8 +31,11 @@ abstract class Controller
         $data['base_url'] = base_url();
         $data['flash_success'] = is_string($flashSuccess) ? $flashSuccess : '';
         $data['flash_error'] = is_string($flashError) ? $flashError : '';
+        $data['current_locale'] = current_locale();
+        $data['available_locales'] = available_locales();
+        $data['html_lang'] = html_lang();
 
-        return $this->view->page($layoutToUse, $template, $data);
+        return translate_markup($this->view->page($layoutToUse, $template, $data));
     }
 
     protected function redirect(string $path, int $status = 302): never
@@ -48,5 +53,18 @@ abstract class Controller
     protected function flash(string $key, string $message): void
     {
         $this->session->set('flash_' . $key, $message);
+    }
+
+    protected function lang(string $key, array $replace = [], string $default = ''): string
+    {
+        if ($this->registry->has('language')) {
+            $language = $this->registry->get('language');
+
+            if ($language instanceof Language) {
+                return $language->get($key, $replace, $default);
+            }
+        }
+
+        return lang($key, $replace, $default);
     }
 }

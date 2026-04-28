@@ -1,6 +1,6 @@
 <?php
 $templateCategory = strtolower(trim((string) ($resume['template_category'] ?? 'basico')));
-$allowedCategories = ['basico', 'moderno', 'profissional', 'criativo', 'minimalista'];
+$allowedCategories = ['basico', 'moderno', 'profissional', 'criativo', 'minimalista', 'coluna2575', 'coluna7525'];
 
 if (!in_array($templateCategory, $allowedCategories, true)) {
     $templateCategory = 'basico';
@@ -10,6 +10,10 @@ $splitLines = static function (string $value): array {
     $parts = preg_split('/\r\n|\r|\n/', trim($value)) ?: [];
 
     return array_values(array_filter(array_map('trim', $parts), static fn (string $line): bool => $line !== ''));
+};
+
+$normalizeTextBlock = static function (string $value) use ($splitLines): string {
+    return implode("\n", $splitLines($value));
 };
 
 $toBullets = static function (string $value): array {
@@ -49,8 +53,8 @@ if (count($personalLines) > 1) {
     }
 }
 
-$summaryText = trim((string) ($resume['professional_summary'] ?? ''));
-$objectiveText = trim((string) ($resume['objective'] ?? ''));
+$summaryText = $normalizeTextBlock((string) ($resume['professional_summary'] ?? ''));
+$objectiveText = $normalizeTextBlock((string) ($resume['objective'] ?? ''));
 
 $experiencesRaw = is_array($resume['experiences'] ?? null) ? $resume['experiences'] : [];
 $educationsRaw = is_array($resume['educations'] ?? null) ? $resume['educations'] : [];
@@ -91,7 +95,7 @@ foreach ($educationsRaw as $item) {
     $degree = trim((string) ($item['degree'] ?? ''));
     $start = trim((string) ($item['start_period'] ?? ''));
     $end = trim((string) ($item['end_period'] ?? ''));
-    $description = trim((string) ($item['description'] ?? ''));
+    $description = $normalizeTextBlock((string) ($item['description'] ?? ''));
     $period = trim($start . (($start !== '' || $end !== '') ? ' - ' : '') . $end);
 
     if ($institution === '' && $degree === '' && $period === '' && $description === '') {
@@ -166,7 +170,7 @@ $projects = [];
 foreach ($projectsRaw as $item) {
     $name = trim((string) ($item['name'] ?? ''));
     $role = trim((string) ($item['role'] ?? ''));
-    $description = trim((string) ($item['description'] ?? ''));
+    $description = $normalizeTextBlock((string) ($item['description'] ?? ''));
     $link = trim((string) ($item['project_link'] ?? ''));
 
     if ($name === '' && $role === '' && $description === '' && $link === '') {
@@ -205,6 +209,22 @@ $hasRenderableSections = $summaryText !== ''
     || $projects !== []
     || $links !== [];
 
+$hasMainColumnContent = $summaryText !== ''
+    || $objectiveText !== ''
+    || $experiences !== []
+    || $educations !== []
+    || $projects !== [];
+
+$hasSideColumnContent = $skills !== []
+    || $languages !== []
+    || $certifications !== []
+    || $courses !== []
+    || $links !== [];
+
+$isColumnTemplate = in_array($templateCategory, ['coluna2575', 'coluna7525'], true);
+$useColumnLayout = $isColumnTemplate && $hasMainColumnContent && $hasSideColumnContent;
+$isLeftWideColumn = $templateCategory === 'coluna7525';
+
 $designOptions = is_array($resume['design_options'] ?? null) ? $resume['design_options'] : [];
 $fontSize = (int) ($designOptions['font_size'] ?? 11);
 if ($fontSize < 10 || $fontSize > 14) {
@@ -217,12 +237,204 @@ $themeMap = [
     'profissional' => ['accent' => '#1f2933', 'soft' => '#f5f7fa', 'line' => '#dce3ec', 'text' => '#111827', 'muted' => '#4b5563', 'font' => 'DejaVu Serif'],
     'criativo' => ['accent' => '#a65012', 'soft' => '#fdf7f2', 'line' => '#ecdccc', 'text' => '#2f2620', 'muted' => '#6f5b4f', 'font' => 'DejaVu Sans'],
     'minimalista' => ['accent' => '#111827', 'soft' => '#f7f8fa', 'line' => '#e2e6ec', 'text' => '#111827', 'muted' => '#4b5563', 'font' => 'DejaVu Sans'],
+    'coluna2575' => ['accent' => '#1f3b57', 'soft' => '#f1f6fb', 'line' => '#d3dfec', 'text' => '#142638', 'muted' => '#4b5f73', 'font' => 'DejaVu Sans'],
+    'coluna7525' => ['accent' => '#245748', 'soft' => '#f2f8f5', 'line' => '#d0e2da', 'text' => '#17342b', 'muted' => '#496459', 'font' => 'DejaVu Sans'],
 ];
 
 $theme = $themeMap[$templateCategory];
 $theme['accent'] = $sanitizeHexColor((string) ($designOptions['accent_color'] ?? '')) ?? $theme['accent'];
 $theme['soft'] = $sanitizeHexColor((string) ($designOptions['header_bg_color'] ?? '')) ?? $theme['soft'];
+$theme['header_text'] = $sanitizeHexColor((string) ($designOptions['header_text_color'] ?? '')) ?? $theme['text'];
 $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')) ?? $theme['text'];
+
+$resumeId = (int) ($resume['resume_id'] ?? 0);
+$browserExportUrl = base_url('catalog/index.php?route=resume/export/browser/' . $resumeId);
+$platformTargets = [
+    [
+        'name' => 'LinkedIn',
+        'url' => 'https://www.linkedin.com/jobs/application-settings/',
+        'note' => 'Carregue o PDF em Resumes and application data.',
+    ],
+    [
+        'name' => 'CIEE',
+        'url' => 'https://web.ciee.org.br/login/cadastro',
+        'note' => 'Atualize o perfil e anexe o curriculo.',
+    ],
+    [
+        'name' => 'Catho',
+        'url' => 'https://www.catho.com.br/cadastro-candidato/',
+        'note' => 'Cadastre o curriculo para candidaturas.',
+    ],
+    [
+        'name' => 'Infojobs',
+        'url' => 'https://www.infojobs.com.br/cadastrar-curriculo.aspx',
+        'note' => 'Envie o CV para aplicar nas vagas.',
+    ],
+];
+
+$renderMainSections = static function () use ($summaryText, $objectiveText, $experiences, $educations, $projects): void {
+    if ($summaryText !== ''): ?>
+        <section class="section">
+            <h2 class="section-title">Resumo</h2>
+            <p><?= nl2br(e($summaryText)) ?></p>
+        </section>
+    <?php endif;
+
+    if ($objectiveText !== ''): ?>
+        <section class="section">
+            <h2 class="section-title">Objetivo</h2>
+            <p><?= nl2br(e($objectiveText)) ?></p>
+        </section>
+    <?php endif;
+
+    if ($experiences !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Experiência</h2>
+            <?php foreach ($experiences as $item): ?>
+                <article class="item">
+                    <p class="item-title"><?= e((string) $item['headline']) ?></p>
+                    <?php if ($item['subtitle'] !== ''): ?>
+                        <p class="item-subtitle"><?= e((string) $item['subtitle']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['period'] !== ''): ?>
+                        <p class="item-period"><?= e((string) $item['period']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['bullets'] !== []): ?>
+                        <ul>
+                            <?php foreach ($item['bullets'] as $bullet): ?>
+                                <li><?= e((string) $bullet) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+        </section>
+    <?php endif;
+
+    if ($educations !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Formação</h2>
+            <?php foreach ($educations as $item): ?>
+                <article class="item">
+                    <p class="item-title"><?= e((string) $item['headline']) ?></p>
+                    <?php if ($item['subtitle'] !== ''): ?>
+                        <p class="item-subtitle"><?= e((string) $item['subtitle']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['period'] !== ''): ?>
+                        <p class="item-period"><?= e((string) $item['period']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['description'] !== ''): ?>
+                        <p><?= nl2br(e((string) $item['description'])) ?></p>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+        </section>
+    <?php endif;
+
+    if ($projects !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Projetos</h2>
+            <?php foreach ($projects as $item): ?>
+                <article class="item">
+                    <?php if ($item['name'] !== ''): ?>
+                        <p class="item-title"><?= e((string) $item['name']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['role'] !== ''): ?>
+                        <p class="item-subtitle"><?= e((string) $item['role']) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['description'] !== ''): ?>
+                        <p><?= nl2br(e((string) $item['description'])) ?></p>
+                    <?php endif; ?>
+                    <?php if ($item['link'] !== ''): ?>
+                        <p class="muted"><?= e((string) $item['link']) ?></p>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+        </section>
+    <?php endif;
+};
+
+$renderSideSections = static function () use ($skills, $languages, $certifications, $courses, $links): void {
+    if ($skills !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Habilidades</h2>
+            <ul>
+                <?php foreach ($skills as $item): ?>
+                    <li><?= e((string) $item['skill']) ?><?= $item['level'] !== '' ? ' (' . e((string) $item['level']) . ')' : '' ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif;
+
+    if ($languages !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Idiomas</h2>
+            <ul>
+                <?php foreach ($languages as $item): ?>
+                    <li><?= e((string) $item['language']) ?><?= $item['level'] !== '' ? ' (' . e((string) $item['level']) . ')' : '' ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif;
+
+    if ($certifications !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Certificações</h2>
+            <ul>
+                <?php foreach ($certifications as $item): ?>
+                    <li><?= e((string) $item['title']) ?><?= $item['issuer'] !== '' ? ' - ' . e((string) $item['issuer']) : '' ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif;
+
+    if ($courses !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Cursos</h2>
+            <ul>
+                <?php foreach ($courses as $item): ?>
+                    <li>
+                        <?= e((string) $item['name']) ?>
+                        <?= $item['institution'] !== '' ? ' - ' . e((string) $item['institution']) : '' ?>
+                        <?= $item['year'] !== '' ? ' (' . e((string) $item['year']) . ')' : '' ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif;
+
+    if ($links !== []): ?>
+        <section class="section">
+            <h2 class="section-title">Links</h2>
+            <ul>
+                <?php foreach ($links as $item): ?>
+                    <li><?= $item['label'] !== '' ? e((string) $item['label']) . ': ' : '' ?><?= e((string) $item['url']) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+    <?php endif;
+};
+
+$renderPlatformSection = static function () use ($platformTargets, $browserExportUrl): void {
+    if ($platformTargets === []) {
+        return;
+    }
+    ?>
+    <section class="section section-full">
+        <h2 class="section-title">Envio para plataformas</h2>
+        <ul class="platform-list">
+            <?php foreach ($platformTargets as $target): ?>
+                <li>
+                    <strong><?= e((string) ($target['name'] ?? '')) ?>:</strong>
+                    <?= e((string) ($target['note'] ?? '')) ?>
+                    <a class="platform-link" href="<?= e((string) ($target['url'] ?? '')) ?>"><?= e((string) ($target['url'] ?? '')) ?></a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <p class="muted">Link web do curriculo: <?= e($browserExportUrl) ?></p>
+    </section>
+    <?php
+};
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -239,18 +451,24 @@ $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')
             font-family: <?= $theme['font'] ?>, Arial, sans-serif;
             font-size: <?= $fontSize ?>px;
             line-height: 1.45;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .sheet {
-            border: 1px solid <?= $theme['line'] ?>;
-            border-radius: 5px;
-            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            border: 0;
+            border-radius: 0;
+            overflow: visible;
+            box-sizing: border-box;
         }
 
         .header {
             background: <?= $theme['soft'] ?>;
             border-bottom: 2px solid <?= $theme['accent'] ?>;
             padding: 13px 14px 11px;
+            box-sizing: border-box;
         }
 
         .name {
@@ -258,34 +476,95 @@ $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')
             font-size: 22px;
             line-height: 1.1;
             font-weight: 700;
-            color: <?= $theme['text'] ?>;
+            color: <?= $theme['header_text'] ?>;
         }
 
         .headline {
             margin: 3px 0 0;
             font-size: <?= max(11, $fontSize) ?>px;
-            color: <?= $theme['text'] ?>;
+            color: <?= $theme['header_text'] ?>;
         }
 
         .meta {
             margin: 4px 0 0;
-            color: <?= $theme['muted'] ?>;
+            color: <?= $theme['header_text'] ?>;
+            opacity: .82;
             font-size: <?= max(9, $fontSize - 1) ?>px;
         }
 
         .contact {
             margin: 5px 0 0;
-            color: <?= $theme['muted'] ?>;
+            color: <?= $theme['header_text'] ?>;
+            opacity: .82;
             font-size: <?= max(9, $fontSize - 1) ?>px;
+            overflow-wrap: anywhere;
         }
 
         .body {
             padding: 12px 14px 13px;
+            box-sizing: border-box;
+        }
+
+        .columns::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .column {
+            box-sizing: border-box;
+        }
+
+        .columns.columns-25-75 .column-main {
+            float: right;
+            width: 75%;
+            padding-left: 8px;
+        }
+
+        .columns.columns-25-75 .column-side {
+            float: left;
+            width: 25%;
+            padding-right: 8px;
+        }
+
+        .columns.columns-75-25 .column-main {
+            float: left;
+            width: 75%;
+            padding-right: 8px;
+        }
+
+        .columns.columns-75-25 .column-side {
+            float: right;
+            width: 25%;
+            padding-left: 8px;
+        }
+
+        .section-full {
+            clear: both;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .platform-list {
+            margin: 0;
+            padding-left: 14px;
+            font-size: <?= max(8, $fontSize - 2) ?>px;
+            color: <?= $theme['muted'] ?>;
+        }
+
+        .platform-list li {
+            margin-bottom: 2px;
+        }
+
+        .platform-link {
+            color: <?= $theme['accent'] ?>;
+            text-decoration: none;
         }
 
         .section {
-            margin-bottom: 10px;
-            page-break-inside: avoid;
+            margin-bottom: 8px;
+            page-break-inside: auto;
+            break-inside: auto;
         }
 
         .section:last-child {
@@ -301,11 +580,14 @@ $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')
             text-transform: uppercase;
             letter-spacing: .8px;
             font-weight: 700;
+            page-break-after: avoid;
+            break-after: avoid-page;
         }
 
         .item {
-            margin-bottom: 7px;
-            page-break-inside: avoid;
+            margin-bottom: 6px;
+            page-break-inside: auto;
+            break-inside: auto;
         }
 
         .item:last-child {
@@ -332,20 +614,39 @@ $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')
         }
 
         p {
-            margin: 0 0 5px;
+            margin: 0 0 4px;
+            overflow-wrap: anywhere;
         }
 
         ul {
-            margin: 0;
+            margin: 2px 0 0;
             padding-left: 16px;
+            page-break-inside: auto;
+            break-inside: auto;
         }
 
         li {
-            margin-bottom: 3px;
+            margin-bottom: 2px;
+            overflow-wrap: anywhere;
         }
 
         .muted {
             color: <?= $theme['muted'] ?>;
+        }
+
+        @media print {
+            html,
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .sheet {
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -362,146 +663,33 @@ $theme['text'] = $sanitizeHexColor((string) ($designOptions['text_color'] ?? '')
 
         <div class="body">
             <?php if ($hasRenderableSections): ?>
-                <?php if ($summaryText !== ''): ?>
-                    <section class="section">
-                        <h2 class="section-title">Resumo</h2>
-                        <p><?= nl2br(e($summaryText)) ?></p>
-                    </section>
+                <?php if ($useColumnLayout): ?>
+                    <div class="columns <?= $isLeftWideColumn ? 'columns-75-25' : 'columns-25-75' ?>">
+                        <?php if ($isLeftWideColumn): ?>
+                            <div class="column column-main">
+                                <?php $renderMainSections(); ?>
+                            </div>
+                            <div class="column column-side">
+                                <?php $renderSideSections(); ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="column column-side">
+                                <?php $renderSideSections(); ?>
+                            </div>
+                            <div class="column column-main">
+                                <?php $renderMainSections(); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <?php $renderMainSections(); ?>
+                    <?php $renderSideSections(); ?>
                 <?php endif; ?>
 
-                <?php if ($objectiveText !== ''): ?>
-                    <section class="section">
-                        <h2 class="section-title">Objetivo</h2>
-                        <p><?= nl2br(e($objectiveText)) ?></p>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($experiences !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Experiência</h2>
-                        <?php foreach ($experiences as $item): ?>
-                            <article class="item">
-                                <p class="item-title"><?= e((string) $item['headline']) ?></p>
-                                <?php if ($item['subtitle'] !== ''): ?>
-                                    <p class="item-subtitle"><?= e((string) $item['subtitle']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['period'] !== ''): ?>
-                                    <p class="item-period"><?= e((string) $item['period']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['bullets'] !== []): ?>
-                                    <ul>
-                                        <?php foreach ($item['bullets'] as $bullet): ?>
-                                            <li><?= e((string) $bullet) ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                <?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($educations !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Formação</h2>
-                        <?php foreach ($educations as $item): ?>
-                            <article class="item">
-                                <p class="item-title"><?= e((string) $item['headline']) ?></p>
-                                <?php if ($item['subtitle'] !== ''): ?>
-                                    <p class="item-subtitle"><?= e((string) $item['subtitle']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['period'] !== ''): ?>
-                                    <p class="item-period"><?= e((string) $item['period']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['description'] !== ''): ?>
-                                    <p><?= nl2br(e((string) $item['description'])) ?></p>
-                                <?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($skills !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Habilidades</h2>
-                        <ul>
-                            <?php foreach ($skills as $item): ?>
-                                <li><?= e((string) $item['skill']) ?><?= $item['level'] !== '' ? ' (' . e((string) $item['level']) . ')' : '' ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($languages !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Idiomas</h2>
-                        <ul>
-                            <?php foreach ($languages as $item): ?>
-                                <li><?= e((string) $item['language']) ?><?= $item['level'] !== '' ? ' (' . e((string) $item['level']) . ')' : '' ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($certifications !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Certificações</h2>
-                        <ul>
-                            <?php foreach ($certifications as $item): ?>
-                                <li><?= e((string) $item['title']) ?><?= $item['issuer'] !== '' ? ' - ' . e((string) $item['issuer']) : '' ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($courses !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Cursos</h2>
-                        <ul>
-                            <?php foreach ($courses as $item): ?>
-                                <li>
-                                    <?= e((string) $item['name']) ?>
-                                    <?= $item['institution'] !== '' ? ' - ' . e((string) $item['institution']) : '' ?>
-                                    <?= $item['year'] !== '' ? ' (' . e((string) $item['year']) . ')' : '' ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($projects !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Projetos</h2>
-                        <?php foreach ($projects as $item): ?>
-                            <article class="item">
-                                <?php if ($item['name'] !== ''): ?>
-                                    <p class="item-title"><?= e((string) $item['name']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['role'] !== ''): ?>
-                                    <p class="item-subtitle"><?= e((string) $item['role']) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['description'] !== ''): ?>
-                                    <p><?= nl2br(e((string) $item['description'])) ?></p>
-                                <?php endif; ?>
-                                <?php if ($item['link'] !== ''): ?>
-                                    <p class="muted"><?= e((string) $item['link']) ?></p>
-                                <?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </section>
-                <?php endif; ?>
-
-                <?php if ($links !== []): ?>
-                    <section class="section">
-                        <h2 class="section-title">Links</h2>
-                        <ul>
-                            <?php foreach ($links as $item): ?>
-                                <li><?= $item['label'] !== '' ? e((string) $item['label']) . ': ' : '' ?><?= e((string) $item['url']) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </section>
-                <?php endif; ?>
+                <?php $renderPlatformSection(); ?>
             <?php endif; ?>
         </div>
     </div>
 </body>
 </html>
+

@@ -49,7 +49,7 @@ class InstallerController extends Controller
         }
 
         if (!$this->validateCsrfToken()) {
-            $this->flash('error', 'Token CSRF inválido.');
+            $this->flash('error', $this->lang('Token CSRF inválido.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
@@ -58,7 +58,7 @@ class InstallerController extends Controller
         $permissionsOk = $this->allOk($installer->getPermissionChecks());
 
         if (!$requirementsOk || !$permissionsOk) {
-            $this->flash('error', 'Corrija os requisitos e permissões antes de continuar.');
+            $this->flash('error', $this->lang('Corrija os requisitos e permissões antes de continuar.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
@@ -75,14 +75,14 @@ class InstallerController extends Controller
         }
 
         if (!$this->step1Ready()) {
-            $this->flash('error', 'Finalize o passo 1 antes de acessar o passo 2.');
+            $this->flash('error', $this->lang('Finalize o passo 1 antes de acessar o passo 2.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
         $form = array_replace($this->defaultStep2Form(), $this->getWizardData('step2_form', []));
         $dbStatus = $this->getWizardData('step2_db_status', [
             'success' => false,
-            'message' => 'Preencha os dados e teste a conexão com o banco.',
+            'message' => $this->lang('Preencha os dados e teste a conexão com o banco.'),
             'details' => [],
         ]);
 
@@ -101,12 +101,12 @@ class InstallerController extends Controller
         }
 
         if (!$this->validateCsrfToken()) {
-            $this->flash('error', 'Token CSRF inválido.');
+            $this->flash('error', $this->lang('Token CSRF inválido.'));
             $this->redirect('install/index.php?route=step/2');
         }
 
         if (!$this->step1Ready()) {
-            $this->flash('error', 'Finalize o passo 1 antes de testar o banco.');
+            $this->flash('error', $this->lang('Finalize o passo 1 antes de testar o banco.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
@@ -118,9 +118,9 @@ class InstallerController extends Controller
         $this->setWizardData('step2_db_status', $result);
 
         if (($result['success'] ?? false) === true) {
-            $this->flash('success', 'Conexão com banco validada no passo 2.');
+            $this->flash('success', $this->lang('Conexão com banco validada no passo 2.'));
         } else {
-            $this->flash('error', (string) ($result['message'] ?? 'Falha ao conectar com o banco.'));
+            $this->flash('error', (string) ($result['message'] ?? $this->lang('Falha ao conectar com o banco.')));
         }
 
         $this->redirect('install/index.php?route=step/2');
@@ -133,12 +133,12 @@ class InstallerController extends Controller
         }
 
         if (!$this->validateCsrfToken()) {
-            $this->flash('error', 'Token CSRF inválido.');
+            $this->flash('error', $this->lang('Token CSRF inválido.'));
             $this->redirect('install/index.php?route=step/2');
         }
 
         if (!$this->step1Ready()) {
-            $this->flash('error', 'Finalize o passo 1 antes de continuar.');
+            $this->flash('error', $this->lang('Finalize o passo 1 antes de continuar.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
@@ -150,13 +150,13 @@ class InstallerController extends Controller
         $this->setWizardData('step2_db_status', $result);
 
         if (($result['success'] ?? false) !== true) {
-            $this->flash('error', 'Não foi possível validar o banco. Revise os dados do passo 2.');
+            $this->flash('error', $this->lang('Não foi possível validar o banco. Revise os dados do passo 2.'));
             $this->redirect('install/index.php?route=step/2');
         }
 
         $this->setWizardData('step2_ok', true);
         $this->clearStepDataFrom(3);
-        $this->flash('success', 'Passo 2 validado. Configure o administrador no passo 3.');
+        $this->flash('success', $this->lang('Passo 2 validado. Configure o administrador no passo 3.'));
 
         $this->redirect('install/index.php?route=step/3');
     }
@@ -168,17 +168,17 @@ class InstallerController extends Controller
         }
 
         if (!$this->step1Ready()) {
-            $this->flash('error', 'Finalize o passo 1 antes de acessar o passo 3.');
+            $this->flash('error', $this->lang('Finalize o passo 1 antes de acessar o passo 3.'));
             $this->redirect('install/index.php?route=step/1');
         }
 
         if (!$this->step2Ready()) {
-            $this->flash('error', 'Finalize o passo 2 antes de acessar o passo 3.');
+            $this->flash('error', $this->lang('Finalize o passo 2 antes de acessar o passo 3.'));
             $this->redirect('install/index.php?route=step/2');
         }
 
         $form = array_replace([
-            'admin_name' => 'Administrador',
+            'admin_name' => $this->lang('Administrador'),
             'admin_email' => 'admin@nosfirvertex.local',
             'admin_password' => '',
             'admin_password_confirm' => '',
@@ -205,14 +205,14 @@ class InstallerController extends Controller
         if (!$this->validateCsrfToken()) {
             return $this->page('install/result', [
                 'success' => false,
-                'messages' => ['Token CSRF inválido. Recarregue a página e tente novamente.'],
+                'messages' => [$this->lang('Token CSRF inválido. Recarregue a página e tente novamente.')],
             ]);
         }
 
         if (!$this->step1Ready() || !$this->step2Ready()) {
             return $this->page('install/result', [
                 'success' => false,
-                'messages' => ['Fluxo incompleto. Execute os passos 1 e 2 antes de finalizar.'],
+                'messages' => [$this->lang('Fluxo incompleto. Execute os passos 1 e 2 antes de finalizar.')],
             ]);
         }
 
@@ -247,8 +247,8 @@ class InstallerController extends Controller
             return $this->page('install/result', [
                 'success' => true,
                 'messages' => [
-                    'Instalação concluída com sucesso.',
-                    'Catálogo e admin prontos para uso.',
+                    $this->lang('Instalação concluída com sucesso.'),
+                    $this->lang('Catálogo e admin prontos para uso.'),
                 ],
                 'catalog_url' => base_url('catalog/index.php'),
                 'admin_url' => base_url('admin/index.php'),
@@ -257,14 +257,14 @@ class InstallerController extends Controller
 
         return $this->page('install/result', [
             'success' => false,
-            'messages' => $result['errors'] ?? ['Falha inesperada na instalação.'],
+            'messages' => $result['errors'] ?? [$this->lang('Falha inesperada na instalação.')],
         ]);
     }
 
     public function restart(): never
     {
         $this->clearWizardData();
-        $this->flash('success', 'Assistente reiniciado.');
+        $this->flash('success', $this->lang('Assistente reiniciado.'));
 
         $this->redirect('install/index.php?route=step/1');
     }
@@ -273,7 +273,7 @@ class InstallerController extends Controller
     {
         return $this->page('install/result', [
             'success' => false,
-            'messages' => ['Rota do instalador não encontrada.'],
+            'messages' => [$this->lang('Rota do instalador não encontrada.')],
         ]);
     }
 
@@ -342,19 +342,19 @@ class InstallerController extends Controller
         $errors = [];
 
         if ($payload['admin_name'] === '') {
-            $errors[] = 'Informe o nome do administrador.';
+            $errors[] = $this->lang('Informe o nome do administrador.');
         }
 
         if (!filter_var($payload['admin_email'], FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Informe um e-mail de administrador válido.';
+            $errors[] = $this->lang('Informe um e-mail de administrador válido.');
         }
 
         if (mb_strlen($payload['admin_password']) < 8) {
-            $errors[] = 'A senha deve ter pelo menos 8 caracteres.';
+            $errors[] = $this->lang('A senha deve ter pelo menos 8 caracteres.');
         }
 
         if ($payload['admin_password'] !== $payload['admin_password_confirm']) {
-            $errors[] = 'A confirmação da senha não confere.';
+            $errors[] = $this->lang('A confirmação da senha não confere.');
         }
 
         return $errors;

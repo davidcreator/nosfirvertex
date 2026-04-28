@@ -10,7 +10,7 @@ class ThemeController extends Controller
     public function toggle(): never
     {
         if (!$this->request->isPost() || !$this->validateCsrfToken()) {
-            $this->flash('error', 'Requisição inválida para troca de tema.');
+            $this->flash('error', $this->lang('Requisição inválida para troca de tema.'));
             $this->redirect('catalog/index.php');
         }
 

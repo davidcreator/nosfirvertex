@@ -19,17 +19,17 @@ class AuthController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $error = 'Token de segurança inválido. Atualize a página.';
+                $error = $this->lang('Token de segurança inválido. Atualize a página.');
             } else {
                 $email = (string) $this->request->post('email', '');
                 $password = (string) $this->request->post('password', '');
 
                 if ($this->auth->attempt($email, $password)) {
-                    $this->flash('success', 'Login realizado com sucesso.');
+                    $this->flash('success', $this->lang('Login realizado com sucesso.'));
                     $this->redirect('catalog/index.php?route=dashboard');
                 }
 
-                $error = 'E-mail ou senha inválidos.';
+                $error = $this->lang('E-mail ou senha inválidos.');
             }
         }
 
@@ -48,23 +48,23 @@ class AuthController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $error = 'Token de segurança inválido. Atualize a página.';
+                $error = $this->lang('Token de segurança inválido. Atualize a página.');
             } else {
                 $fullName = (string) $this->request->post('full_name', '');
                 $email = (string) $this->request->post('email', '');
                 $password = (string) $this->request->post('password', '');
 
                 if (!Validator::required($fullName) || !Validator::email($email) || !Validator::minLength($password, 8)) {
-                    $error = 'Preencha nome, e-mail válido e senha com mínimo de 8 caracteres.';
+                    $error = $this->lang('Preencha nome, e-mail válido e senha com mínimo de 8 caracteres.');
                 } else {
                     $userModel = new UserModel($this->registry);
 
                     if ($userModel->existsByEmail($email)) {
-                        $error = 'Já existe uma conta com este e-mail.';
+                        $error = $this->lang('Já existe uma conta com este e-mail.');
                     } else {
                         $userModel->createUser($fullName, $email, $password);
                         $this->auth->attempt($email, $password);
-                        $this->flash('success', 'Conta criada com sucesso.');
+                        $this->flash('success', $this->lang('Conta criada com sucesso.'));
                         $this->redirect('catalog/index.php?route=dashboard');
                     }
                 }
@@ -82,7 +82,7 @@ class AuthController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $message = 'Token de segurança inválido.';
+                $message = $this->lang('Token de segurança inválido.');
             } else {
                 $email = (string) $this->request->post('email', '');
                 $userModel = new UserModel($this->registry);
@@ -92,7 +92,7 @@ class AuthController extends Controller
                     $this->sendPasswordResetEmail($email, $token);
                 }
 
-                $message = 'Se o e-mail existir, instruções de recuperação foram enviadas.';
+                $message = $this->lang('Se o e-mail existir, instruções de recuperação foram enviadas.');
             }
         }
 
@@ -108,7 +108,7 @@ class AuthController extends Controller
 
         if (!$this->isResetTokenFormatValid($cleanToken) || !$userModel->isPasswordResetTokenValid($cleanToken)) {
             return $this->page('account/reset', [
-                'error' => 'O link de recuperação é inválido ou expirou.',
+                'error' => $this->lang('O link de recuperação é inválido ou expirou.'),
                 'can_submit' => false,
             ]);
         }
@@ -117,19 +117,19 @@ class AuthController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $error = 'Token de segurança inválido.';
+                $error = $this->lang('Token de segurança inválido.');
             } else {
                 $password = (string) $this->request->post('password', '');
                 $passwordConfirm = (string) $this->request->post('password_confirm', '');
 
                 if (!Validator::minLength($password, 8)) {
-                    $error = 'A nova senha deve ter no mínimo 8 caracteres.';
+                    $error = $this->lang('A nova senha deve ter no mínimo 8 caracteres.');
                 } elseif ($password !== $passwordConfirm) {
-                    $error = 'A confirmação de senha não confere.';
+                    $error = $this->lang('A confirmação de senha não confere.');
                 } elseif (!$userModel->resetPasswordByToken($cleanToken, $password)) {
-                    $error = 'Não foi possível redefinir a senha. Solicite um novo link.';
+                    $error = $this->lang('Não foi possível redefinir a senha. Solicite um novo link.');
                 } else {
-                    $this->flash('success', 'Senha redefinida com sucesso. Faça login para continuar.');
+                    $this->flash('success', $this->lang('Senha redefinida com sucesso. Faça login para continuar.'));
                     $this->redirect('catalog/index.php?route=login');
                 }
             }
@@ -144,12 +144,12 @@ class AuthController extends Controller
     public function logout(): never
     {
         if (!$this->request->isPost() || !$this->validateCsrfToken()) {
-            $this->flash('error', 'Requisição inválida para logout.');
+            $this->flash('error', $this->lang('Requisição inválida para logout.'));
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
         $this->auth->logout();
-        $this->flash('success', 'Sessão encerrada com sucesso.');
+        $this->flash('success', $this->lang('Sessão encerrada com sucesso.'));
 
         $this->redirect('catalog/index.php');
     }
@@ -159,13 +159,13 @@ class AuthController extends Controller
         $resetPath = 'catalog/index.php?route=password/reset/' . rawurlencode($token);
         $resetUrl = $this->toAbsoluteUrl(base_url($resetPath));
 
-        $subject = 'Recuperação de senha - NosfirVertex';
-        $body = "Olá,\n\n"
-            . "Recebemos uma solicitação de recuperação de senha.\n"
-            . "Use o link abaixo para definir uma nova senha:\n\n"
+        $subject = $this->lang('Recuperação de senha - NosfirVertex');
+        $body = $this->lang('Olá,') . "\n\n"
+            . $this->lang('Recebemos uma solicitação de recuperação de senha.') . "\n"
+            . $this->lang('Use o link abaixo para definir uma nova senha:') . "\n\n"
             . $resetUrl . "\n\n"
-            . "Se você não solicitou essa alteração, ignore esta mensagem.\n"
-            . "Este link expira em 1 hora.\n";
+            . $this->lang('Se você não solicitou essa alteração, ignore esta mensagem.') . "\n"
+            . $this->lang('Este link expira em 1 hora.') . "\n";
 
         $headers = [
             'MIME-Version: 1.0',
@@ -174,7 +174,7 @@ class AuthController extends Controller
         ];
 
         if (!function_exists('mail')) {
-            $this->logger->warning('Função mail() indisponível para recuperação de senha.', [
+            $this->logger->warning($this->lang('Função mail() indisponível para recuperação de senha.'), [
                 'context' => 'catalog',
             ]);
 
@@ -183,7 +183,7 @@ class AuthController extends Controller
 
         $sent = @mail($email, $subject, $body, implode("\r\n", $headers));
         if (!$sent) {
-            $this->logger->warning('Falha ao enviar e-mail de recuperação.', [
+            $this->logger->warning($this->lang('Falha ao enviar e-mail de recuperação.'), [
                 'context' => 'catalog',
                 'email' => mb_strtolower(trim($email)),
             ]);

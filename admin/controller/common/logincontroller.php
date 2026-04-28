@@ -17,17 +17,17 @@ class LoginController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $error = 'Token de segurança inválido.';
+                $error = $this->lang('Token de segurança inválido.');
             } else {
                 $email = (string) $this->request->post('email', '');
                 $password = (string) $this->request->post('password', '');
 
                 if ($this->auth->attempt($email, $password)) {
-                    $this->flash('success', 'Login administrativo realizado.');
+                    $this->flash('success', $this->lang('Login administrativo realizado.'));
                     $this->redirect('admin/index.php?route=dashboard');
                 }
 
-                $error = 'Credenciais administrativas inválidas.';
+                $error = $this->lang('Credenciais administrativas inválidas.');
             }
         }
 
@@ -39,12 +39,12 @@ class LoginController extends Controller
     public function logout(): never
     {
         if (!$this->request->isPost() || !$this->validateCsrfToken()) {
-            $this->flash('error', 'Requisição inválida para logout.');
+            $this->flash('error', $this->lang('Requisição inválida para logout.'));
             $this->redirect('admin/index.php?route=dashboard');
         }
 
         $this->auth->logout();
-        $this->flash('success', 'Sessão administrativa encerrada.');
+        $this->flash('success', $this->lang('Sessão administrativa encerrada.'));
         $this->redirect('admin/index.php?route=login');
     }
 }

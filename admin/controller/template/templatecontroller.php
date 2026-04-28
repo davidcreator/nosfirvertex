@@ -16,7 +16,7 @@ class TemplateController extends Controller
 
         if ($this->request->isPost() && $this->validateCsrfToken()) {
             $model->save($this->request->allPost());
-            $this->flash('success', 'Template salvo com sucesso.');
+            $this->flash('success', $this->lang('Template salvo com sucesso.'));
             $this->redirect('admin/index.php?route=templates');
         }
 

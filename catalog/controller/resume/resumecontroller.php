@@ -26,7 +26,7 @@ class ResumeController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $this->flash('error', 'Token de seguranca invalido.');
+                $this->flash('error', $this->lang('Token de segurança inválido.'));
                 $this->redirect('catalog/index.php?route=resume/create');
             }
 
@@ -35,7 +35,7 @@ class ResumeController extends Controller
             if (trim($form['title']) === '') {
                 return $this->page('resume/form', [
                     'mode' => 'create',
-                    'error' => 'Informe um titulo para o curriculo.',
+                    'error' => $this->lang('Informe um título para o currículo.'),
                     'form' => $form,
                     'templates' => $templates,
                 ]);
@@ -52,7 +52,7 @@ class ResumeController extends Controller
             }
 
             $resumeId = $resumeModel->save((int) $this->auth->id(), $form, null);
-            $this->flash('success', 'Curriculo criado com sucesso.');
+            $this->flash('success', $this->lang('Currículo criado com sucesso.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -75,7 +75,7 @@ class ResumeController extends Controller
         $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
 
         if ($resume === null) {
-            $this->flash('error', 'Curriculo nao encontrado.');
+            $this->flash('error', $this->lang('Currículo não encontrado.'));
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -83,7 +83,7 @@ class ResumeController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $this->flash('error', 'Token de seguranca invalido.');
+                $this->flash('error', $this->lang('Token de segurança inválido.'));
                 $this->redirect('catalog/index.php?route=resume/edit/' . $resumeId);
             }
 
@@ -93,7 +93,7 @@ class ResumeController extends Controller
                 return $this->page('resume/form', [
                     'mode' => 'edit',
                     'resume_id' => $resumeId,
-                    'error' => 'Informe um titulo para o curriculo.',
+                    'error' => $this->lang('Informe um título para o currículo.'),
                     'form' => $form,
                     'templates' => $templateModel->getActiveTemplates(),
                 ]);
@@ -111,7 +111,7 @@ class ResumeController extends Controller
             }
 
             $resumeModel->save((int) $this->auth->id(), $form, $resumeId);
-            $this->flash('success', 'Curriculo atualizado.');
+            $this->flash('success', $this->lang('Currículo atualizado.'));
             $this->redirect('catalog/index.php?route=resume/view/' . $resumeId);
         }
 
@@ -133,7 +133,7 @@ class ResumeController extends Controller
         $resume = $resumeModel->getDetailedByIdForUser($resumeId, (int) $this->auth->id());
 
         if ($resume === null) {
-            $this->flash('error', 'Curriculo nao encontrado.');
+            $this->flash('error', $this->lang('Currículo não encontrado.'));
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -147,7 +147,7 @@ class ResumeController extends Controller
         $this->ensureAuth();
 
         if (!$this->request->isPost() || !$this->validateCsrfToken()) {
-            $this->flash('error', 'Requisicao invalida para exclusao de curriculo.');
+            $this->flash('error', $this->lang('Requisição inválida para exclusão de currículo.'));
             $this->redirect('catalog/index.php?route=dashboard');
         }
 
@@ -155,14 +155,14 @@ class ResumeController extends Controller
         $resumeModel = new ResumeModel($this->registry);
         $resumeModel->delete($resumeId, (int) $this->auth->id());
 
-        $this->flash('success', 'Curriculo removido.');
+        $this->flash('success', $this->lang('Currículo removido.'));
         $this->redirect('catalog/index.php?route=dashboard');
     }
 
     private function ensureAuth(): void
     {
         if (!$this->auth->check()) {
-            $this->flash('error', 'Faca login para acessar seus curriculos.');
+            $this->flash('error', $this->lang('Faça login para acessar seus currículos.'));
             $this->redirect('catalog/index.php?route=login');
         }
     }
@@ -176,6 +176,7 @@ class ResumeController extends Controller
             'font_size' => '11',
             'accent_color' => '#0a66c2',
             'header_bg_color' => '#f3f8fd',
+            'header_text_color' => '#1f2937',
             'text_color' => '#1f2937',
             'personal_data' => '',
             'objective' => '',
@@ -200,6 +201,7 @@ class ResumeController extends Controller
             'font_size' => (string) ($input['font_size'] ?? '11'),
             'accent_color' => (string) ($input['accent_color'] ?? '#0a66c2'),
             'header_bg_color' => (string) ($input['header_bg_color'] ?? '#f3f8fd'),
+            'header_text_color' => (string) ($input['header_text_color'] ?? '#1f2937'),
             'text_color' => (string) ($input['text_color'] ?? '#1f2937'),
             'personal_data' => (string) ($input['personal_data'] ?? ''),
             'objective' => (string) ($input['objective'] ?? ''),
@@ -226,6 +228,7 @@ class ResumeController extends Controller
             'font_size' => (string) ($designOptions['font_size'] ?? '11'),
             'accent_color' => (string) ($designOptions['accent_color'] ?? '#0a66c2'),
             'header_bg_color' => (string) ($designOptions['header_bg_color'] ?? '#f3f8fd'),
+            'header_text_color' => (string) ($designOptions['header_text_color'] ?? $designOptions['text_color'] ?? '#1f2937'),
             'text_color' => (string) ($designOptions['text_color'] ?? '#1f2937'),
             'personal_data' => (string) ($resume['personal_data'] ?? ''),
             'objective' => (string) ($resume['objective'] ?? ''),
@@ -271,7 +274,7 @@ class ResumeController extends Controller
     {
         $experienceError = $this->validateStructuredPeriodLines(
             (string) ($form['experiences_raw'] ?? ''),
-            'Experiencias',
+            $this->lang('Experiências'),
             true
         );
         if ($experienceError !== '') {
@@ -280,7 +283,7 @@ class ResumeController extends Controller
 
         return $this->validateStructuredPeriodLines(
             (string) ($form['educations_raw'] ?? ''),
-            'Formacao academica',
+            $this->lang('Formação acadêmica'),
             true
         );
     }
@@ -297,18 +300,27 @@ class ResumeController extends Controller
 
             $lineNumber = $index + 1;
             if ($start !== '' && !$this->isMonthYear($start)) {
-                return $sectionLabel . ': linha ' . $lineNumber . ' com data de inicio invalida. Use MM/AAAA.';
+                return $this->lang('{section}: linha {line} com data de início inválida. Use MM/AAAA.', [
+                    'section' => $sectionLabel,
+                    'line' => (string) $lineNumber,
+                ]);
             }
 
             if ($end !== '') {
                 $isCurrentLabel = $allowCurrentEnd && $this->isCurrentPeriodLabel($end);
                 if (!$isCurrentLabel && !$this->isMonthYear($end)) {
-                    return $sectionLabel . ': linha ' . $lineNumber . ' com data de fim invalida. Use MM/AAAA ou Atual.';
+                    return $this->lang('{section}: linha {line} com data de fim inválida. Use MM/AAAA ou Atual.', [
+                        'section' => $sectionLabel,
+                        'line' => (string) $lineNumber,
+                    ]);
                 }
             }
 
             if ($description !== '' && $this->containsDatePattern($description)) {
-                return $sectionLabel . ': linha ' . $lineNumber . ' possui data na descricao. Coloque datas apenas nos campos de inicio/fim.';
+                return $this->lang('{section}: linha {line} possui data na descrição. Coloque datas apenas nos campos de início/fim.', [
+                    'section' => $sectionLabel,
+                    'line' => (string) $lineNumber,
+                ]);
             }
         }
 
@@ -341,7 +353,7 @@ class ResumeController extends Controller
     {
         $normalized = mb_strtolower(trim($value));
 
-        return in_array($normalized, ['atual', 'presente', 'em andamento', 'cursando'], true);
+        return in_array($normalized, ['atual', 'presente', 'em andamento', 'cursando', 'current', 'present', 'ongoing'], true);
     }
 
     private function containsDatePattern(string $value): bool

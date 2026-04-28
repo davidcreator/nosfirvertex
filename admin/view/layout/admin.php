@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e($html_lang ?? html_lang()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'Vertex Admin') ?></title>
+    <title><?= e($app_name ?? lang('Vertex Admin')) ?></title>
     <link rel="stylesheet" href="<?= e(base_url('admin/css/fonts/fontawesome/css/all.min.css')) ?>">
     <style>
         :root {
@@ -98,21 +98,28 @@
     </style>
 </head>
 <body>
+<?php
+$localeOptions = is_array($available_locales ?? null) ? $available_locales : available_locales();
+$activeLocale = (string) ($current_locale ?? current_locale());
+?>
 <div class="shell">
     <nav class="nav">
-        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);">Vertex Admin</a></strong>
+        <strong><a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>" style="text-decoration:none;color:var(--text);"><?= e(lang('Vertex Admin')) ?></a></strong>
         <div class="menu">
+            <?php foreach ($localeOptions as $localeCode): ?>
+                <a href="<?= e(locale_switch_url((string) $localeCode)) ?>"<?= $activeLocale === (string) $localeCode ? ' class="primary"' : '' ?>><?= e(strtoupper((string) $localeCode)) ?></a>
+            <?php endforeach; ?>
             <?php if (!empty($auth_user)): ?>
-                <a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
-                <a href="<?= e(base_url('admin/index.php?route=users')) ?>"><i class="fa-solid fa-users"></i> Usuários</a>
-                <a href="<?= e(base_url('admin/index.php?route=resumes')) ?>"><i class="fa-solid fa-file-lines"></i> Currículos</a>
-                <a href="<?= e(base_url('admin/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Templates</a>
-                <a href="<?= e(base_url('admin/index.php?route=ads')) ?>"><i class="fa-solid fa-rectangle-ad"></i> Anúncios</a>
-                <a href="<?= e(base_url('admin/index.php?route=settings')) ?>"><i class="fa-solid fa-gears"></i> Configurações</a>
-                <a href="<?= e(base_url('admin/index.php?route=logs')) ?>"><i class="fa-solid fa-list-check"></i> Logs</a>
+                <a href="<?= e(base_url('admin/index.php?route=dashboard')) ?>"><i class="fa-solid fa-gauge-high"></i> <?= e(lang('Dashboard')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=users')) ?>"><i class="fa-solid fa-users"></i> <?= e(lang('Usuários')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=resumes')) ?>"><i class="fa-solid fa-file-lines"></i> <?= e(lang('Currículos')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> <?= e(lang('Templates')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=ads')) ?>"><i class="fa-solid fa-rectangle-ad"></i> <?= e(lang('Anúncios')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=settings')) ?>"><i class="fa-solid fa-gears"></i> <?= e(lang('Configurações')) ?></a>
+                <a href="<?= e(base_url('admin/index.php?route=logs')) ?>"><i class="fa-solid fa-list-check"></i> <?= e(lang('Logs')) ?></a>
                 <form method="post" action="<?= e(base_url('admin/index.php?route=logout')) ?>">
                     <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
-                    <button class="primary" type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                    <button class="primary" type="submit"><i class="fa-solid fa-right-from-bracket"></i> <?= e(lang('Sair')) ?></button>
                 </form>
             <?php endif; ?>
         </div>

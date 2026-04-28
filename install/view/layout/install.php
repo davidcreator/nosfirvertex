@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e($html_lang ?? html_lang()) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'Instalador NosfirVertex') ?></title>
+    <title><?= e($app_name ?? lang('Instalador NosfirVertex')) ?></title>
     <style>
         :root {
             --bg: #f4f6f8;
@@ -127,6 +127,27 @@
             padding: 12px;
             font-size: 14px;
         }
+        .locale-switch {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .locale-switch a {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-decoration: none;
+            color: var(--text);
+            background: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .locale-switch a.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: transparent;
+        }
         @media (min-width: 768px) {
             .grid.two {
                 grid-template-columns: 1fr 1fr;
@@ -135,11 +156,20 @@
     </style>
 </head>
 <body>
+<?php
+$localeOptions = is_array($available_locales ?? null) ? $available_locales : available_locales();
+$activeLocale = (string) ($current_locale ?? current_locale());
+?>
 <div class="wrap">
+    <div class="locale-switch">
+        <?php foreach ($localeOptions as $localeCode): ?>
+            <a href="<?= e(locale_switch_url((string) $localeCode)) ?>" class="<?= $activeLocale === (string) $localeCode ? 'active' : '' ?>"><?= e(strtoupper((string) $localeCode)) ?></a>
+        <?php endforeach; ?>
+    </div>
     <div class="stepper">
-        <div class="step-chip <?= (int) ($step ?? 0) === 1 ? 'active' : '' ?>">Passo 1<br><small>Requisitos</small></div>
-        <div class="step-chip <?= (int) ($step ?? 0) === 2 ? 'active' : '' ?>">Passo 2<br><small>Banco de dados</small></div>
-        <div class="step-chip <?= (int) ($step ?? 0) === 3 ? 'active' : '' ?>">Passo 3<br><small>Administrador</small></div>
+        <div class="step-chip <?= (int) ($step ?? 0) === 1 ? 'active' : '' ?>"><?= e(lang('Passo 1')) ?><br><small><?= e(lang('Requisitos')) ?></small></div>
+        <div class="step-chip <?= (int) ($step ?? 0) === 2 ? 'active' : '' ?>"><?= e(lang('Passo 2')) ?><br><small><?= e(lang('Banco de dados')) ?></small></div>
+        <div class="step-chip <?= (int) ($step ?? 0) === 3 ? 'active' : '' ?>"><?= e(lang('Passo 3')) ?><br><small><?= e(lang('Administrador')) ?></small></div>
     </div>
 
     <?php if (!empty($flash_success)): ?>

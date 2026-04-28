@@ -8,6 +8,7 @@ use NosfirVertex\System\Library\Config;
 use NosfirVertex\System\Library\Csrf;
 use NosfirVertex\System\Library\Database;
 use NosfirVertex\System\Library\Logger;
+use NosfirVertex\System\Library\Language;
 use NosfirVertex\System\Library\Request;
 use NosfirVertex\System\Library\Response;
 use NosfirVertex\System\Library\Session;
@@ -36,6 +37,7 @@ class Application
         $response = new Response();
         $session = new Session(DIR_STORAGE . '/sessions');
         $csrf = new Csrf($session);
+        $language = $this->buildLanguage($request, $session, $config);
         $requestId = $this->generateRequestId();
 
         $response->addHeader('X-Request-Id: ' . $requestId);
@@ -56,6 +58,7 @@ class Application
         $registry->set('response', $response);
         $registry->set('session', $session);
         $registry->set('csrf', $csrf);
+        $registry->set('language', $language);
         $registry->set('db', $db);
         $registry->set('logger', $logger);
         $registry->set('view', $view);
@@ -94,6 +97,40 @@ class Application
         }
 
         $response->send();
+    }
+
+    private function buildLanguage(Request $request, Session $session, Config $config): Language
+    {
+        $languageDirectory = DIR_ROOT . '/' . $this->area . '/language';
+        $availableLocales = Language::discoverLocales($languageDirectory);
+
+        $fallbackLocale = strtolower(trim((string) $config->get('app.locale', 'pt-br')));
+        if ($fallbackLocale === '') {
+            $fallbackLocale = 'pt-br';
+        }
+
+        if ($availableLocales !== [] && !in_array($fallbackLocale, $availableLocales, true)) {
+            $fallbackLocale = $availableLocales[0];
+        }
+
+        $requestedLocale = strtolower(trim((string) $request->get('lang', '')));
+        $sessionLocale = strtolower(trim((string) $session->get('locale', '')));
+
+        $candidate = $requestedLocale !== '' ? $requestedLocale : $sessionLocale;
+        if ($candidate === '') {
+            $candidate = $fallbackLocale;
+        }
+
+        $language = new Language($languageDirectory, $candidate, $fallbackLocale);
+
+        $resolvedLocale = $language->getLocale();
+        $session->set('locale', $resolvedLocale);
+        $config->set('app.locale', $resolvedLocale);
+        $config->set('app.available_locales', $language->getAvailableLocales());
+
+        nv_set_language($language);
+
+        return $language;
     }
 
     private function buildDatabase(Config $config): Database|null
@@ -162,18 +199,24 @@ class Application
         };
 
         $backLabel = match ($this->area) {
-            'admin' => 'Voltar ao admin',
-            'install' => 'Voltar ao instalador',
-            default => 'Voltar ao inicio',
+            'admin' => lang('Voltar ao admin'),
+            'install' => lang('Voltar ao instalador'),
+            default => lang('Voltar ao início'),
         };
 
+        $title = lang('Erro interno');
+        $description = lang('Ocorreu um erro inesperado. Nossa equipe pode localizar o evento com o identificador abaixo.');
+        $htmlLang = html_lang();
         $safeRequestId = htmlspecialchars($requestId, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $safeBackUrl = htmlspecialchars($backUrl, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $safeBackLabel = htmlspecialchars($backLabel, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeTitle = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeDescription = htmlspecialchars($description, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeHtmlLang = htmlspecialchars($htmlLang, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         return '<!doctype html>'
-            . '<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-            . '<title>Erro interno</title>'
+            . '<html lang="' . $safeHtmlLang . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+            . '<title>' . $safeTitle . '</title>'
             . '<style>'
             . 'body{margin:0;font-family:Segoe UI,Tahoma,sans-serif;background:#f4f7fb;color:#1b2d3a;}'
             . '.wrap{max-width:680px;margin:48px auto;padding:0 16px;}'
@@ -183,8 +226,8 @@ class Application
             . 'a.btn{display:inline-block;margin-top:8px;background:#0e7c7b;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;}'
             . '</style></head><body>'
             . '<div class="wrap"><div class="card">'
-            . '<h1>Erro interno</h1>'
-            . '<p>Ocorreu um erro inesperado. Nossa equipe pode localizar o evento com o identificador abaixo.</p>'
+            . '<h1>' . $safeTitle . '</h1>'
+            . '<p>' . $safeDescription . '</p>'
             . '<p class="muted">Request ID: <strong>' . $safeRequestId . '</strong></p>'
             . '<a class="btn" href="' . $safeBackUrl . '">' . $safeBackLabel . '</a>'
             . '</div></div></body></html>';

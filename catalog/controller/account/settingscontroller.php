@@ -29,7 +29,7 @@ class SettingsController extends Controller
             ];
 
             $userModel->updateAccount($userId, $payload);
-            $this->flash('success', 'Configurações atualizadas.');
+            $this->flash('success', $this->lang('Configurações atualizadas.'));
             $this->redirect('catalog/index.php?route=account/settings');
         }
 
@@ -43,7 +43,7 @@ class SettingsController extends Controller
     private function ensureAuth(): void
     {
         if (!$this->auth->check()) {
-            $this->flash('error', 'Faça login para acessar as configurações.');
+            $this->flash('error', $this->lang('Faça login para acessar as configurações.'));
             $this->redirect('catalog/index.php?route=login');
         }
     }

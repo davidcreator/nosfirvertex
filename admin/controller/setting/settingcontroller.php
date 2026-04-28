@@ -17,7 +17,7 @@ class SettingController extends Controller
 
         if ($this->request->isPost()) {
             if (!$this->validateCsrfToken()) {
-                $this->flash('error', 'Token de segurança inválido para salvar configurações.');
+                $this->flash('error', $this->lang('Token de segurança inválido para salvar configurações.'));
                 $this->redirect('admin/index.php?route=settings');
             }
 
@@ -26,7 +26,7 @@ class SettingController extends Controller
                 $model->save($key, $value);
             }
 
-            $this->flash('success', 'Configurações atualizadas.');
+            $this->flash('success', $this->lang('Configurações atualizadas.'));
             $this->redirect('admin/index.php?route=settings');
         }
 
@@ -51,15 +51,15 @@ class SettingController extends Controller
             'settings_map' => $settingsMap,
             'donation_defaults' => [
                 'donation_enabled' => '1',
-                'donation_title' => 'Apoie o NosfirVertex',
-                'donation_message' => 'Se a plataforma te ajudou, você pode contribuir de forma voluntária para manter o projeto online.',
-                'donation_goal_text' => 'As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.',
+                'donation_title' => $this->lang('Apoie o NosfirVertex'),
+                'donation_message' => $this->lang('Se a plataforma te ajudou, você pode contribuir de forma voluntária para manter o projeto online.'),
+                'donation_goal_text' => $this->lang('As doações ajudam com hospedagem, manutenção, melhorias de UX e novos recursos para todos os usuários.'),
                 'donation_pix_key' => '',
                 'donation_pix_beneficiary' => 'NosfirVertex',
                 'donation_paypal_url' => '',
                 'donation_bank_transfer' => '',
                 'donation_qr_image' => '',
-                'donation_thanks_message' => 'Obrigado pelo apoio. Toda contribuição faz diferença para manter a plataforma gratuita.',
+                'donation_thanks_message' => $this->lang('Obrigado pelo apoio. Toda contribuição faz diferença para manter a plataforma gratuita.'),
             ],
         ]);
     }

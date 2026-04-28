@@ -299,3 +299,120 @@ if (!function_exists('nv_is_safe_link_href')) {
         return in_array(strtolower((string) $parsed['scheme']), ['http', 'https', 'mailto', 'tel'], true);
     }
 }
+
+if (!function_exists('nv_set_language')) {
+    function nv_set_language(mixed $language): void
+    {
+        $GLOBALS['nv_language'] = $language;
+    }
+}
+
+if (!function_exists('nv_language')) {
+    function nv_language(): mixed
+    {
+        return $GLOBALS['nv_language'] ?? null;
+    }
+}
+
+if (!function_exists('lang')) {
+    function lang(string $key, array $replace = [], string $default = ''): string
+    {
+        $language = nv_language();
+
+        if (is_object($language) && method_exists($language, 'get')) {
+            return (string) $language->get($key, $replace, $default);
+        }
+
+        $value = $default !== '' ? $default : $key;
+        foreach ($replace as $token => $tokenValue) {
+            $value = str_replace('{' . (string) $token . '}', (string) $tokenValue, $value);
+        }
+
+        return $value;
+    }
+}
+
+if (!function_exists('current_locale')) {
+    function current_locale(): string
+    {
+        $language = nv_language();
+
+        if (is_object($language) && method_exists($language, 'getLocale')) {
+            return (string) $language->getLocale();
+        }
+
+        return 'pt-br';
+    }
+}
+
+if (!function_exists('available_locales')) {
+    function available_locales(): array
+    {
+        $language = nv_language();
+
+        if (is_object($language) && method_exists($language, 'getAvailableLocales')) {
+            $locales = $language->getAvailableLocales();
+
+            return is_array($locales) ? $locales : ['pt-br'];
+        }
+
+        return ['pt-br'];
+    }
+}
+
+if (!function_exists('html_lang')) {
+    function html_lang(): string
+    {
+        $language = nv_language();
+
+        if (is_object($language) && method_exists($language, 'getHtmlLang')) {
+            return (string) $language->getHtmlLang();
+        }
+
+        return 'pt-BR';
+    }
+}
+
+if (!function_exists('translate_markup')) {
+    function translate_markup(string $content): string
+    {
+        $language = nv_language();
+
+        if (is_object($language) && method_exists($language, 'translateMarkup')) {
+            return (string) $language->translateMarkup($content);
+        }
+
+        return $content;
+    }
+}
+
+if (!function_exists('locale_switch_url')) {
+    function locale_switch_url(string $locale): string
+    {
+        $locale = strtolower(trim(str_replace('_', '-', $locale)));
+        if ($locale === '') {
+            return (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        }
+
+        $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+        if ($requestUri === '') {
+            return '?lang=' . rawurlencode($locale);
+        }
+
+        $parts = parse_url($requestUri);
+        $path = (string) ($parts['path'] ?? '');
+        if ($path === '') {
+            $path = '/';
+        }
+
+        $query = [];
+        if (isset($parts['query'])) {
+            parse_str((string) $parts['query'], $query);
+        }
+
+        $query['lang'] = $locale;
+        $queryString = http_build_query($query);
+
+        return $queryString === '' ? $path : ($path . '?' . $queryString);
+    }
+}

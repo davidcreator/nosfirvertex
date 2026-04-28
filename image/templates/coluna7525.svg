@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Template colunas 75-25">
+  <rect width="900" height="1200" fill="#f8faf6"/>
+  <rect x="50" y="40" width="800" height="140" rx="12" fill="#245748"/>
+  <rect x="50" y="220" width="590" height="910" rx="10" fill="#edf6f2"/>
+  <rect x="660" y="220" width="190" height="910" rx="10" fill="#deeee7"/>
+  <rect x="70" y="250" width="550" height="230" rx="8" fill="#d0e7de"/>
+  <rect x="70" y="510" width="550" height="270" rx="8" fill="#d0e7de"/>
+  <rect x="70" y="810" width="550" height="290" rx="8" fill="#d0e7de"/>
+  <rect x="680" y="250" width="150" height="150" rx="8" fill="#c2ddd2"/>
+  <rect x="680" y="430" width="150" height="210" rx="8" fill="#c2ddd2"/>
+  <rect x="680" y="670" width="150" height="430" rx="8" fill="#c2ddd2"/>
+</svg>

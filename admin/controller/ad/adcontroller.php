@@ -16,7 +16,7 @@ class AdController extends Controller
 
         if ($this->request->isPost() && $this->validateCsrfToken()) {
             $model->save($this->request->allPost());
-            $this->flash('success', 'Bloco de anúncio salvo com sucesso.');
+            $this->flash('success', $this->lang('Bloco de anúncio salvo com sucesso.'));
             $this->redirect('admin/index.php?route=ads');
         }
 
