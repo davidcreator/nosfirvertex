@@ -1,0 +1,29 @@
+.donation-key {
+    font-family: "Consolas", "Courier New", monospace;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    background: color-mix(in srgb, var(--surface) 90%, #eef6ff);
+    word-break: break-all;
+    margin-bottom: 8px;
+}
+
+.donation-qr {
+    width: 100%;
+    max-width: 240px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: block;
+    margin-top: 8px;
+}
+
+.donation-soft {
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    background: color-mix(in srgb, var(--surface) 92%, #f0f8f7);
+}
+
+.donation-soft-text {
+    margin-top: 6px;
+}

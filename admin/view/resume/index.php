@@ -31,26 +31,26 @@ $endPage = min($totalPages, $currentPage + 2);
 ?>
 
 <section class="card">
-    <h1>Gerenciamento de curriculos</h1>
-    <p class="muted">Acompanhamento dos curriculos criados na area publica.</p>
+    <h1><?= e(lang('Gerenciamento de curriculos')) ?></h1>
+    <p class="muted"><?= e(lang('Acompanhamento dos curriculos criados na area publica.')) ?></p>
 
     <form method="get" action="<?= e(base_url('admin/index.php')) ?>">
         <input type="hidden" name="route" value="resumes">
         <div class="grid cols-3">
             <div>
-                <label for="q">Busca</label>
-                <input id="q" name="q" value="<?= e((string) ($filters['q'] ?? '')) ?>" placeholder="Titulo, usuario ou e-mail">
+                <label for="q"><?= e(lang('Busca')) ?></label>
+                <input id="q" name="q" value="<?= e((string) ($filters['q'] ?? '')) ?>" placeholder="<?= e(lang('Titulo, usuario ou e-mail')) ?>">
             </div>
             <div>
-                <label for="status">Status</label>
+                <label for="status"><?= e(lang('Status')) ?></label>
                 <select id="status" name="status">
-                    <option value="">Todos</option>
-                    <option value="draft"<?= (($filters['status'] ?? '') === 'draft') ? ' selected' : '' ?>>Rascunho</option>
-                    <option value="published"<?= (($filters['status'] ?? '') === 'published') ? ' selected' : '' ?>>Publicado</option>
+                    <option value=""><?= e(lang('Todos')) ?></option>
+                    <option value="draft"<?= (($filters['status'] ?? '') === 'draft') ? ' selected' : '' ?>><?= e(lang('Rascunho')) ?></option>
+                    <option value="published"<?= (($filters['status'] ?? '') === 'published') ? ' selected' : '' ?>><?= e(lang('Publicado')) ?></option>
                 </select>
             </div>
             <div>
-                <label for="per_page">Itens por pagina</label>
+                <label for="per_page"><?= e(lang('Itens por pagina')) ?></label>
                 <select id="per_page" name="per_page">
                     <?php foreach ([20, 50, 100] as $size): ?>
                         <option value="<?= $size ?>"<?= $perPage === $size ? ' selected' : '' ?>><?= $size ?></option>
@@ -58,35 +58,35 @@ $endPage = min($totalPages, $currentPage + 2);
                 </select>
             </div>
             <div>
-                <label for="updated_from">Atualizado de</label>
+                <label for="updated_from"><?= e(lang('Atualizado de')) ?></label>
                 <input id="updated_from" type="date" name="updated_from" value="<?= e((string) ($filters['updated_from'] ?? '')) ?>">
             </div>
             <div>
-                <label for="updated_to">Atualizado ate</label>
+                <label for="updated_to"><?= e(lang('Atualizado ate')) ?></label>
                 <input id="updated_to" type="date" name="updated_to" value="<?= e((string) ($filters['updated_to'] ?? '')) ?>">
             </div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button type="submit">Filtrar</button>
-            <a class="button" href="<?= e(base_url('admin/index.php?route=resumes')) ?>">Limpar</a>
+        <div class="section-actions">
+            <button type="submit"><?= e(lang('Filtrar')) ?></button>
+            <a class="button secondary" href="<?= e(base_url('admin/index.php?route=resumes')) ?>"><?= e(lang('Limpar')) ?></a>
         </div>
     </form>
 </section>
 
 <section class="card">
-    <p class="muted">Total encontrado: <?= $total ?></p>
+    <p class="muted"><?= e(lang('Total encontrado:')) ?> <?= $total ?></p>
 
-    <div style="overflow:auto;">
+    <div class="table-wrap">
         <table>
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Titulo</th>
-                <th>Usuario</th>
-                <th>E-mail</th>
-                <th>Status</th>
-                <th>Template</th>
-                <th>Atualizado em</th>
+                <th><?= e(lang('Titulo')) ?></th>
+                <th><?= e(lang('Usuario')) ?></th>
+                <th><?= e(lang('E-mail')) ?></th>
+                <th><?= e(lang('Status')) ?></th>
+                <th><?= e(lang('Template')) ?></th>
+                <th><?= e(lang('Atualizado em')) ?></th>
             </tr>
             </thead>
             <tbody>
@@ -104,7 +104,7 @@ $endPage = min($totalPages, $currentPage + 2);
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="7" class="muted">Nenhum curriculo encontrado para os filtros aplicados.</td>
+                    <td colspan="7" class="muted"><?= e(lang('Nenhum curriculo encontrado para os filtros aplicados.')) ?></td>
                 </tr>
             <?php endif; ?>
             </tbody>
@@ -112,21 +112,21 @@ $endPage = min($totalPages, $currentPage + 2);
     </div>
 
     <?php if ($totalPages > 1): ?>
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <div class="pager">
             <?php if ($currentPage > 1): ?>
-                <a class="button" href="<?= e($buildUrl(['page' => $currentPage - 1])) ?>">Anterior</a>
+                <a class="button secondary" href="<?= e($buildUrl(['page' => $currentPage - 1])) ?>"><?= e(lang('Anterior')) ?></a>
             <?php endif; ?>
 
             <?php for ($page = $startPage; $page <= $endPage; $page++): ?>
                 <?php if ($page === $currentPage): ?>
-                    <span class="button primary" style="pointer-events:none;"><?= $page ?></span>
+                    <span class="button is-current"><?= $page ?></span>
                 <?php else: ?>
-                    <a class="button" href="<?= e($buildUrl(['page' => $page])) ?>"><?= $page ?></a>
+                    <a class="button secondary" href="<?= e($buildUrl(['page' => $page])) ?>"><?= $page ?></a>
                 <?php endif; ?>
             <?php endfor; ?>
 
             <?php if ($currentPage < $totalPages): ?>
-                <a class="button" href="<?= e($buildUrl(['page' => $currentPage + 1])) ?>">Proxima</a>
+                <a class="button secondary" href="<?= e($buildUrl(['page' => $currentPage + 1])) ?>"><?= e(lang('Proxima')) ?></a>
             <?php endif; ?>
         </div>
     <?php endif; ?>

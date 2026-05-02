@@ -277,4 +277,42 @@ return [
         'Voltar ao instalador' => 'Back to installer',
         'Voltar ao início' => 'Back to home',
     ],
+    'home' => [
+        'entry' => [
+            'badge' => 'Vertex Resume Builder',
+            'title' => 'Create resumes in a simple and objective way with guided writing instructions.',
+            'description' => 'Vertex is a free system for creating resumes aligned with the requirements of many recruiting and human resources teams. The goal is to help candidates improve their chances of getting a job with excellent resume templates.',
+            'features' => [
+                'smart_form' => [
+                    'title' => 'Smart Form:',
+                    'text' => 'Create your resume quickly and clearly with our smart form.',
+                ],
+                'share_export' => [
+                    'title' => 'Share and Export:',
+                    'text' => 'You can share your resume on networks like LinkedIn or export it to file formats such as PDF.',
+                ],
+                'job_platforms' => [
+                    'title' => 'Job Platforms:',
+                    'text' => 'Send your resume to specialized job websites.',
+                ],
+                'anywhere' => [
+                    'title' => 'Anywhere:',
+                    'text' => 'Create, update, or edit your resume on any device. Just sign in.',
+                ],
+            ],
+        ],
+        'login' => [
+            'title' => 'Sign in to your account',
+            'description' => 'Access your dashboard to edit, review, and export your resumes.',
+            'connected_description' => 'You are already signed in. Choose where you want to go:',
+            'open_dashboard' => 'Open dashboard',
+            'create_resume' => 'Create new resume',
+            'sign_out' => 'Sign out',
+            'email' => 'Email',
+            'password' => 'Password',
+            'submit' => 'Sign in to account',
+            'create_account' => 'Create account',
+            'forgot_password' => 'Forgot my password',
+        ],
+    ],
 ];

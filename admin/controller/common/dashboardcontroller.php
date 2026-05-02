@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NosfirVertex\Admin\Controller\Common;
 
+use NosfirVertex\Admin\Model\AdModel;
+use NosfirVertex\Admin\Model\LogModel;
 use NosfirVertex\Admin\Model\ResumeModel;
 use NosfirVertex\Admin\Model\TemplateModel;
 use NosfirVertex\Admin\Model\UserModel;
@@ -19,11 +21,15 @@ class DashboardController extends Controller
         $userModel = new UserModel($this->registry);
         $resumeModel = new ResumeModel($this->registry);
         $templateModel = new TemplateModel($this->registry);
+        $adModel = new AdModel($this->registry);
+        $logModel = new LogModel($this->registry);
 
         return $this->page('common/dashboard', [
             'total_users' => $userModel->getTotal(),
             'total_resumes' => $resumeModel->getTotal(),
             'total_templates' => $templateModel->getTotal(),
+            'total_ads' => count($adModel->getAds()),
+            'total_logs' => $logModel->countLogs(),
         ]);
     }
 

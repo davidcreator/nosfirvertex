@@ -1,0 +1,312 @@
+    .vertex-entry {
+        --vertex-bg: #e8e7e3;
+        --vertex-panel: #fcf9f0;
+        --vertex-login: #131a20;
+        --vertex-form: #e9f0fe;
+        --vertex-create: #273231;
+        --vertex-enter: #4ad4ce;
+        --vertex-dark-text: #f5ffff;
+        --vertex-light-text: #16212c;
+        --vertex-line: #d7d2c4;
+        --vertex-line-strong: #4f5e67;
+        margin: 0;
+    }
+
+    .vertex-entry-shell {
+        background:
+            radial-gradient(circle at 8% 8%, rgba(74, 212, 206, 0.23), transparent 36%),
+            radial-gradient(circle at 88% 12%, rgba(39, 50, 49, 0.18), transparent 34%),
+            var(--vertex-bg);
+        border-radius: 24px;
+        padding: 22px;
+        border: 1px solid #dedcd5;
+        box-shadow: 0 16px 34px rgba(20, 34, 46, 0.13);
+    }
+
+    .vertex-entry-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.95fr;
+        gap: 20px;
+        align-items: stretch;
+    }
+
+    .vertex-entry-panel {
+        background: var(--vertex-panel);
+        color: var(--vertex-light-text);
+        border-radius: 20px;
+        border: 1px solid var(--vertex-line);
+        padding: 28px;
+        box-shadow: 0 8px 24px rgba(22, 33, 44, 0.08);
+    }
+
+    .vertex-entry-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .vertex-entry-brand img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        border-radius: 10px;
+        border: 1px solid var(--vertex-line);
+        background: #ffffff;
+        padding: 4px;
+    }
+
+    .vertex-entry-brand strong {
+        display: block;
+        font-size: 18px;
+        line-height: 1.1;
+    }
+
+    .vertex-entry-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--vertex-line);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        background: #fffdf7;
+    }
+
+    .vertex-entry-panel h1 {
+        margin: 16px 0 12px;
+        font-size: clamp(28px, 4.2vw, 42px);
+        line-height: 1.08;
+        color: var(--vertex-light-text);
+    }
+
+    .vertex-entry-lead {
+        margin: 0 0 18px;
+        max-width: 58ch;
+        line-height: 1.6;
+        color: rgba(22, 33, 44, 0.88);
+    }
+
+    .vertex-entry-list {
+        margin: 0 0 20px;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 9px;
+    }
+
+    .vertex-entry-list li {
+        background: #fffdf7;
+        border: 1px solid var(--vertex-line);
+        border-radius: 12px;
+        padding: 11px 12px;
+        line-height: 1.45;
+    }
+
+    .vertex-entry-language-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .vertex-entry-language-option {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        background: var(--vertex-create);
+        color: var(--vertex-dark-text);
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        min-width: 94px;
+        padding: 10px 14px;
+        transition: transform 0.16s ease, filter 0.16s ease, border-color 0.16s ease;
+    }
+
+    .vertex-entry-language-option:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        text-decoration: none;
+        color: var(--vertex-dark-text);
+    }
+
+    .vertex-entry-language-option.is-active {
+        background: var(--vertex-enter);
+        border-color: rgba(7, 53, 57, 0.35);
+        color: #073539;
+    }
+
+    .vertex-entry-login {
+        background:
+            linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+            var(--vertex-login);
+        color: var(--vertex-dark-text);
+        border-radius: 20px;
+        border: 1px solid rgba(245, 255, 255, 0.19);
+        padding: 26px;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+    }
+
+    .vertex-entry-login h2 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 3vw, 31px);
+        line-height: 1.1;
+        color: var(--vertex-dark-text);
+    }
+
+    .vertex-entry-login p {
+        margin: 0 0 16px;
+        color: rgba(245, 255, 255, 0.84);
+    }
+
+    .vertex-entry-form {
+        background: var(--vertex-form);
+        border: 1px solid rgba(19, 26, 32, 0.2);
+        border-radius: 14px;
+        padding: 14px 14px 16px;
+    }
+
+    .vertex-entry-form label {
+        display: block;
+        margin: 0 0 5px;
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--vertex-light-text);
+    }
+
+    .vertex-entry-form input {
+        width: 100%;
+        border: 1px solid #bcc7d6;
+        border-radius: 10px;
+        background: #fbfdff;
+        color: var(--vertex-light-text);
+        padding: 10px 12px;
+        margin: 0 0 11px;
+        outline: none;
+    }
+
+    .vertex-entry-form input:focus {
+        border-color: var(--vertex-enter);
+        box-shadow: 0 0 0 3px rgba(74, 212, 206, 0.22);
+    }
+
+    .vertex-entry-submit {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        background: var(--vertex-enter);
+        color: #073539;
+        font-weight: 800;
+        padding: 11px 14px;
+        cursor: pointer;
+        transition: transform 0.16s ease, filter 0.16s ease;
+    }
+
+    .vertex-entry-submit:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.06);
+    }
+
+    .vertex-entry-login-links {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+    }
+
+    .vertex-entry-login-links a {
+        text-align: center;
+        border-radius: 10px;
+        padding: 10px 12px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .vertex-entry-login-links .create-link {
+        border: 1px solid rgba(245, 255, 255, 0.28);
+        background: rgba(245, 255, 255, 0.06);
+        color: var(--vertex-dark-text);
+    }
+
+    .vertex-entry-login-links .forgot-link {
+        color: rgba(245, 255, 255, 0.82);
+        border: 1px solid rgba(245, 255, 255, 0.14);
+        background: rgba(245, 255, 255, 0.03);
+    }
+
+    .vertex-entry-login-links a:hover {
+        border-color: rgba(245, 255, 255, 0.45);
+        color: var(--vertex-dark-text);
+        text-decoration: none;
+    }
+
+    .vertex-entry-connected {
+        background: rgba(245, 255, 255, 0.08);
+        border: 1px solid rgba(245, 255, 255, 0.24);
+        border-radius: 14px;
+        padding: 14px;
+        display: grid;
+        gap: 9px;
+    }
+
+    .vertex-entry-connected .button {
+        background: var(--vertex-enter);
+        border-color: transparent;
+        color: #073539;
+        font-weight: 700;
+    }
+
+    .vertex-entry-connected .button.secondary {
+        background: transparent;
+        border: 1px solid rgba(245, 255, 255, 0.35);
+        color: var(--vertex-dark-text);
+    }
+
+    .vertex-entry-connected form {
+        margin: 0;
+    }
+
+    .vertex-entry-connected button {
+        width: 100%;
+        border: 1px solid rgba(245, 255, 255, 0.35);
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: transparent;
+        color: var(--vertex-dark-text);
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .vertex-entry-connected button:hover {
+        border-color: rgba(245, 255, 255, 0.55);
+    }
+
+    @media (max-width: 980px) {
+        .vertex-entry-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .vertex-entry-shell {
+            padding: 14px;
+            border-radius: 18px;
+        }
+
+        .vertex-entry-panel,
+        .vertex-entry-login {
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .vertex-entry-language-option {
+            min-width: 84px;
+        }
+    }

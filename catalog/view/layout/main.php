@@ -3,223 +3,27 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($app_name ?? 'Vertex') ?></title>
+    <?php
+    $metaTitle = (string) ($app_name ?? 'Vertex');
+    $metaDescription = 'Vertex is a free platform for creating and exporting resumes.';
+    $metaImage = base_url('image/vertex_og.png');
+    $metaUrl = base_url('catalog/index.php');
+    ?>
+    <title><?= e($metaTitle) ?></title>
+    <meta name="description" content="<?= e($metaDescription) ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?= e($metaTitle) ?>">
+    <meta property="og:description" content="<?= e($metaDescription) ?>">
+    <meta property="og:url" content="<?= e($metaUrl) ?>">
+    <meta property="og:image" content="<?= e($metaImage) ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($metaTitle) ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription) ?>">
+    <meta name="twitter:image" content="<?= e($metaImage) ?>">
+    <link rel="icon" type="image/png" href="<?= e(base_url('image/vertex.png')) ?>">
+    <link rel="apple-touch-icon" href="<?= e(base_url('image/vertex.png')) ?>">
     <link rel="stylesheet" href="<?= e(base_url('catalog/view/css/fonts/fontawesome/css/all.min.css')) ?>">
-    <style>
-        :root {
-            --bg: #f4f7fb;
-            --bg-accent: linear-gradient(145deg, #f2f7ff, #edf6f5 45%, #f8fbff);
-            --surface: #ffffff;
-            --text: #1b2d3a;
-            --muted: #5f7280;
-            --primary: #0e7c7b;
-            --secondary: #1f4e79;
-            --border: #d6e1e8;
-            --success: #0f8b55;
-            --danger: #b83434;
-            --warning: #9a6100;
-            --radius: 14px;
-            --shadow: 0 12px 24px rgba(27, 45, 58, 0.08);
-            --card-grad: linear-gradient(160deg, #ffffff 0%, #f7fbff 100%);
-        }
-
-        html[data-theme="dark"] {
-            --bg: #0f1b22;
-            --bg-accent: radial-gradient(circle at 20% 20%, #172d39, #0b151b 55%, #071014);
-            --surface: #13222c;
-            --text: #e5f0f7;
-            --muted: #9ab0bf;
-            --primary: #2cb8a6;
-            --secondary: #78b3f3;
-            --border: #29414f;
-            --success: #59d58f;
-            --danger: #ff8888;
-            --warning: #ffce6b;
-            --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-            --card-grad: linear-gradient(160deg, #13242f 0%, #0f1e28 100%);
-        }
-
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            color: var(--text);
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-accent);
-            min-height: 100vh;
-        }
-
-        a { color: var(--secondary); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        .shell {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 12px 12px 24px;
-        }
-
-        .nav {
-            background: var(--card-grad);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        .brand {
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: .3px;
-        }
-
-        .menu {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .menu form {
-            margin: 0;
-        }
-
-        .menu a, .menu button {
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 8px 11px;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .menu a.primary,
-        .menu button.primary {
-            background: var(--primary);
-            color: #fff;
-            border-color: transparent;
-        }
-
-        .flash {
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-            border: 1px solid;
-        }
-
-        .flash.success {
-            border-color: color-mix(in srgb, var(--success) 45%, var(--border));
-            background: color-mix(in srgb, var(--success) 14%, transparent);
-        }
-
-        .flash.error {
-            border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
-            background: color-mix(in srgb, var(--danger) 14%, transparent);
-        }
-
-        .card {
-            background: var(--card-grad);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .grid {
-            display: grid;
-            gap: 12px;
-        }
-
-        .button {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--surface);
-            color: var(--text);
-            padding: 10px 14px;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .button.primary {
-            background: var(--primary);
-            color: #fff;
-            border-color: transparent;
-        }
-
-        .button.warn {
-            background: #c03f3f;
-            color: #fff;
-            border-color: transparent;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            color: var(--text);
-            background: color-mix(in srgb, var(--surface) 96%, transparent);
-            margin-top: 4px;
-            margin-bottom: 10px;
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .muted { color: var(--muted); }
-
-        .fa-solid,
-        .fa-regular,
-        .fa-brands {
-            line-height: 1;
-        }
-
-        footer {
-            margin-top: 16px;
-            padding-top: 8px;
-            color: var(--muted);
-            text-align: center;
-            font-size: 13px;
-        }
-
-        @media (min-width: 768px) {
-            .shell {
-                padding: 24px 18px 30px;
-            }
-
-            .grid.cols-2 {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .grid.cols-3 {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= e(base_url('catalog/view/css/layout-main.css')) ?>">
 </head>
 <body>
 <?php
@@ -227,8 +31,14 @@ $localeOptions = is_array($available_locales ?? null) ? $available_locales : ava
 $activeLocale = (string) ($current_locale ?? current_locale());
 ?>
 <div class="shell">
+    <?php if (empty($hide_nav)): ?>
     <nav class="nav">
-        <div class="brand"><a href="<?= e(base_url('catalog/index.php')) ?>">Vertex</a></div>
+        <div class="brand">
+            <a href="<?= e(base_url('catalog/index.php')) ?>">
+                <img src="<?= e(base_url('image/vertex_logo.png')) ?>" alt="Vertex">
+                <span>Vertex</span>
+            </a>
+        </div>
         <div class="menu">
             <?php foreach ($localeOptions as $localeCode): ?>
                 <a href="<?= e(locale_switch_url((string) $localeCode)) ?>"<?= $activeLocale === (string) $localeCode ? ' class="primary"' : '' ?>><?= e(strtoupper((string) $localeCode)) ?></a>
@@ -254,6 +64,7 @@ $activeLocale = (string) ($current_locale ?? current_locale());
             </form>
         </div>
     </nav>
+    <?php endif; ?>
 
     <?php if (!empty($flash_success)): ?>
         <div class="flash success"><?= e($flash_success) ?></div>

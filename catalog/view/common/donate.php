@@ -30,33 +30,7 @@ if ($hasQr) {
     }
 }
 ?>
-<style>
-    .donation-key {
-        font-family: "Consolas", "Courier New", monospace;
-        border: 1px dashed var(--border);
-        border-radius: 10px;
-        padding: 10px;
-        background: color-mix(in srgb, var(--surface) 90%, #eef6ff);
-        word-break: break-all;
-        margin-bottom: 8px;
-    }
-
-    .donation-qr {
-        width: 100%;
-        max-width: 240px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        display: block;
-        margin-top: 8px;
-    }
-
-    .donation-soft {
-        border: 1px dashed var(--border);
-        border-radius: 10px;
-        padding: 12px;
-        background: color-mix(in srgb, var(--surface) 92%, #f0f8f7);
-    }
-</style>
+<link rel="stylesheet" href="<?= e(base_url('catalog/view/css/donate.css')) ?>">
 
 <section class="card">
     <h1><i class="fa-solid fa-hand-holding-heart"></i> <?= e($title !== '' ? $title : 'Apoie o Vertex') ?></h1>
@@ -83,7 +57,15 @@ if ($hasQr) {
                     <h2><i class="fa-solid fa-qrcode"></i> Doação via PIX</h2>
                     <p class="muted">Beneficiário: <?= e($pixBeneficiary !== '' ? $pixBeneficiary : 'Vertex') ?></p>
                     <div class="donation-key" id="pixKeyValue"><?= e($pixKey) ?></div>
-                    <button class="button" type="button" data-copy-target="pixKeyValue">Copiar chave PIX</button>
+                    <button
+                        class="button"
+                        type="button"
+                        data-copy-target="pixKeyValue"
+                        data-copy-success-label="Chave copiada"
+                        data-copy-error-label="Nao foi possivel copiar"
+                    >
+                        Copiar chave PIX
+                    </button>
                     <?php if ($qrImageUrl !== ''): ?>
                         <img class="donation-qr" src="<?= e($qrImageUrl) ?>" alt="QR Code PIX">
                     <?php endif; ?>
@@ -99,7 +81,7 @@ if ($hasQr) {
                     <?php if ($hasBank): ?>
                         <div class="donation-soft">
                             <strong>Transferência bancária</strong>
-                            <p class="muted" style="margin-top:6px;"><?= nl2br(e($bankTransfer)) ?></p>
+                            <p class="muted donation-soft-text"><?= nl2br(e($bankTransfer)) ?></p>
                         </div>
                     <?php endif; ?>
                 </article>
@@ -116,31 +98,4 @@ if ($hasQr) {
     </section>
 <?php endif; ?>
 
-<script>
-(() => {
-    const buttons = document.querySelectorAll('[data-copy-target]');
-    if (!buttons.length) return;
-
-    buttons.forEach((button) => {
-        button.addEventListener('click', async () => {
-            const targetId = button.getAttribute('data-copy-target');
-            const target = targetId ? document.getElementById(targetId) : null;
-            if (!target) return;
-
-            const text = (target.textContent || '').trim();
-            if (!text) return;
-
-            try {
-                await navigator.clipboard.writeText(text);
-                const original = button.textContent;
-                button.textContent = 'Chave copiada';
-                setTimeout(() => {
-                    button.textContent = original;
-                }, 1800);
-            } catch (error) {
-                button.textContent = 'Não foi possível copiar';
-            }
-        });
-    });
-})();
-</script>
+<script src="<?= e(base_url('catalog/view/js/donate.js')) ?>"></script>

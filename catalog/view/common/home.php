@@ -1,92 +1,83 @@
-<section class="card">
-    <h1><i class="fa-solid fa-file-lines"></i> Crie currículos profissionais de forma rápida e gratuita</h1>
-    <p class="muted">Vertex foi desenhado para funcionar muito bem em celular, com experiência simples, responsiva e orientada para quem busca recolocação profissional.</p>
-    <div class="grid cols-2">
-        <a class="button primary" href="<?= e(base_url('catalog/index.php?route=register')) ?>"><i class="fa-solid fa-user-plus"></i> Criar conta grátis</a>
-        <a class="button" href="<?= e(base_url('catalog/index.php?route=templates')) ?>"><i class="fa-solid fa-layer-group"></i> Ver modelos</a>
+<link rel="stylesheet" href="<?= e(base_url('catalog/view/css/home-entry.css')) ?>">
+
+<section class="vertex-entry">
+    <div class="vertex-entry-shell">
+        <div class="vertex-entry-grid">
+            <section class="vertex-entry-panel">
+                <div class="vertex-entry-brand">
+                    <img src="<?= e(base_url('image/vertex_logo.png')) ?>" alt="Vertex">
+                    <strong>Vertex</strong>
+                </div>                
+                <h1><?= e(lang('home.entry.title')) ?></h1>
+                <p class="vertex-entry-lead"><?= e(lang('home.entry.description')) ?></p>
+
+                <ul class="vertex-entry-list">
+                    <li>
+                        <strong><?= e(lang('home.entry.features.smart_form.title')) ?></strong>
+                        <?= e(lang('home.entry.features.smart_form.text')) ?>
+                    </li>
+                    <li>
+                        <strong><?= e(lang('home.entry.features.share_export.title')) ?></strong>
+                        <?= e(lang('home.entry.features.share_export.text')) ?>
+                    </li>
+                    <li>
+                        <strong><?= e(lang('home.entry.features.job_platforms.title')) ?></strong>
+                        <?= e(lang('home.entry.features.job_platforms.text')) ?>
+                    </li>
+                    <li>
+                        <strong><?= e(lang('home.entry.features.anywhere.title')) ?></strong>
+                        <?= e(lang('home.entry.features.anywhere.text')) ?>
+                    </li>
+                </ul>
+<?php
+                $panelLocaleOptions = is_array($available_locales ?? null) ? $available_locales : available_locales();
+                $panelActiveLocale = (string) ($current_locale ?? current_locale());
+                ?>
+                <div class="vertex-entry-language-selector">
+                    <?php foreach ($panelLocaleOptions as $localeCode): ?>
+                        <?php $isActiveLocale = $panelActiveLocale === (string) $localeCode; ?>
+                        <a
+                            class="vertex-entry-language-option<?= $isActiveLocale ? ' is-active' : '' ?>"
+                            href="<?= e(locale_switch_url((string) $localeCode)) ?>"
+                        >
+                            <?= e(strtoupper((string) $localeCode)) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <aside class="vertex-entry-login">
+                <h2><?= e(lang('home.login.title')) ?></h2>
+                <p><?= e(lang('home.login.description')) ?></p>
+
+                <?php if (!empty($auth_user)): ?>
+                    <div class="vertex-entry-connected">
+                        <p><?= e(lang('home.login.connected_description')) ?></p>
+                        <a class="button" href="<?= e(base_url('catalog/index.php?route=dashboard')) ?>"><?= e(lang('home.login.open_dashboard')) ?></a>
+                        <a class="button secondary" href="<?= e(base_url('catalog/index.php?route=resume/create')) ?>"><?= e(lang('home.login.create_resume')) ?></a>
+                        <form method="post" action="<?= e(base_url('catalog/index.php?route=logout')) ?>">
+                            <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
+                            <button type="submit"><?= e(lang('home.login.sign_out')) ?></button>
+                        </form>
+                    </div>
+                <?php else: ?>
+                    <form class="vertex-entry-form" method="post" action="<?= e(base_url('catalog/index.php?route=login')) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= e($csrf_token) ?>">
+
+                        <label for="entry-email"><?= e(lang('home.login.email')) ?></label>
+                        <input id="entry-email" name="email" type="email" autocomplete="username" required>
+
+                        <label for="entry-password"><?= e(lang('home.login.password')) ?></label>
+                        <input id="entry-password" name="password" type="password" autocomplete="current-password" required>
+
+                        <button type="submit" class="vertex-entry-submit"><?= e(lang('home.login.submit')) ?></button>
+                    </form>
+                    <div class="vertex-entry-login-links">
+                        <a class="create-link" href="<?= e(base_url('catalog/index.php?route=register')) ?>"><?= e(lang('home.login.create_account')) ?></a>
+                        <a class="forgot-link" href="<?= e(base_url('catalog/index.php?route=password/forgot')) ?>"><?= e(lang('home.login.forgot_password')) ?></a>
+                    </div>
+                <?php endif; ?>
+            </aside>
+        </div>
     </div>
 </section>
-
-<?php if (!empty($ads_top)): ?>
-    <section class="card">
-        <h2>Parceiros</h2>
-        <?php foreach ($ads_top as $ad): ?>
-            <article class="card" style="margin-bottom:8px;">
-                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
-            </article>
-        <?php endforeach; ?>
-    </section>
-<?php endif; ?>
-
-<section class="card">
-    <h2>Por que usar o Vertex?</h2>
-    <div class="grid cols-2">
-        <article class="card">
-            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Preenchimento assistido</h3>
-            <p class="muted">Cada seção do currículo tem orientação prática com exemplos para melhorar qualidade e objetividade.</p>
-        </article>
-        <article class="card">
-            <h3><i class="fa-solid fa-file-export"></i> Exportação PDF e digital</h3>
-            <p class="muted">Baixe em PDF ou JSON estruturado para compartilhar em plataformas digitais e integrações futuras.</p>
-        </article>
-        <article class="card">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> Salvar versões</h3>
-            <p class="muted">Cada atualização gera histórico para você evoluir o currículo sem perder progresso.</p>
-        </article>
-        <article class="card">
-            <h3><i class="fa-solid fa-mobile-screen-button"></i> Mobile first</h3>
-            <p class="muted">Interface leve, legível e intuitiva para quem utiliza somente celular.</p>
-        </article>
-    </div>
-</section>
-
-<section class="card">
-    <h2><i class="fa-solid fa-hand-holding-heart"></i> Gostou da plataforma?</h2>
-    <p class="muted">O Vertex é gratuito. Se quiser ajudar com a continuidade do projeto, você pode contribuir de forma voluntária.</p>
-    <a class="button" href="<?= e(base_url('catalog/index.php?route=doacoes')) ?>"><i class="fa-solid fa-gift"></i> Apoiar com doação</a>
-</section>
-
-<section class="card">
-    <h2>Modelos demonstrativos</h2>
-    <div class="grid cols-3">
-        <?php foreach ($templates as $template): ?>
-            <article class="card">
-                <img src="<?= e(base_url((string) $template['image_path'])) ?>" alt="<?= e($template['name']) ?>" style="width:100%;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;">
-                <h3><?= e($template['name']) ?></h3>
-                <p class="muted">Categoria: <?= e($template['category']) ?></p>
-                <p class="muted"><?= e((string) ($template['description'] ?? 'Template demonstrativo para exportação profissional.')) ?></p>
-                <a class="button primary" href="<?= e(base_url('catalog/index.php?route=resume/create&template_id=' . (int) ($template['template_id'] ?? 0))) ?>">Usar template</a>
-            </article>
-        <?php endforeach; ?>
-    </div>
-</section>
-
-<?php if (!empty($ads_mid)): ?>
-    <section class="card">
-        <?php foreach ($ads_mid as $ad): ?>
-            <article class="card" style="margin-bottom:8px;">
-                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
-            </article>
-        <?php endforeach; ?>
-    </section>
-<?php endif; ?>
-
-<section class="card">
-    <h2>Fluxo recomendado</h2>
-    <ol>
-        <li>Crie sua conta e escolha um template.</li>
-        <li>Preencha cada seção com apoio das dicas embutidas.</li>
-        <li>Revise a prévia e faça ajustes.</li>
-        <li>Exporte em PDF e em formato digital.</li>
-    </ol>
-</section>
-
-<?php if (!empty($ads_footer)): ?>
-    <section class="card">
-        <?php foreach ($ads_footer as $ad): ?>
-            <article class="card" style="margin-bottom:8px;">
-                <?= sanitize_html_fragment((string) ($ad['content_html'] ?? '')) ?>
-            </article>
-        <?php endforeach; ?>
-    </section>
-<?php endif; ?>
