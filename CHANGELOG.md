@@ -16,6 +16,11 @@ Formato inspirado em Keep a Changelog.
 - Processo de validacao automatica passa a incluir lint PHP, analise estatica (PHPStan) e smoke de rotas.
 - Smoke test passou a validar fluxos `POST/CSRF` (login, logout e troca de tema) em `catalog` e `admin`.
 
+### Docs
+- `README.md` reescrito com escopo funcional atual, requisitos reais, fluxo de instalacao e comandos de qualidade.
+- Documentacao em `docs/` sincronizada com o estado atual do codigo (catalog, admin, install, arquitetura, rotas e banco).
+- `docs/FREATURES.md` atualizado como roadmap vigente, removendo itens ja concluidos e priorizando pendencias reais.
+
 ## [0.1.0] - 2026-04-13
 
 ### Added

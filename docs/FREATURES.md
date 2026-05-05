@@ -1,273 +1,183 @@
-﻿# FREATURES
+# FREATURES
 
-Sugestoes de melhorias aplicaveis ao projeto NosfirVertex com foco em seguranca, confiabilidade, operacao e evolucao de produto.
+Roadmap tecnico e funcional do NosfirVertex.
 
 ## Escopo da analise
 
-Analise realizada em 2026-04-15, considerando principalmente:
+Analise atualizada em 2026-05-05, considerando principalmente:
 
 - `system/engine/*`
 - `system/library/*`
 - `catalog/controller/*` e `catalog/model/*`
 - `admin/controller/*` e `admin/model/*`
 - `install/controller/*` e `install/model/*`
-- documentacao em `docs/*`
+- documentacao em `README.md` e `docs/*`
 
-## Achados rapidos
+## Estado atual (resumo)
 
-- Nao existe `.gitignore` no repositorio.
-- `system/config/installed.php` esta versionado (inclui credenciais locais).
-- Existem arquivos de runtime dentro de `system/storage` (sessoes e arquivos de teste).
-- O fluxo de recuperacao de senha gera token, mas ainda nao conclui reset por link.
-- O token de recuperacao esta sendo gravado em log.
-- Salvar curriculo envolve multiplas operacoes sem transacao unica.
-- A `base_url` configurada no instalador nao esta sendo usada pelo helper global.
+Concluido no codigo atual:
+
+- `.gitignore` presente e removendo segredos/runtime
+- `base_url()` prioriza config de `installed.php`
+- sessao com hardening basico (`httponly`, `secure`, `samesite`, regeneracao de ID)
+- logout/troca de tema com `POST + CSRF`
+- recuperacao de senha com token de expiracao e invalidacao
+- `save()` de curriculo com transacao
+- logger com `request_id` em arquivo e metadata
+- sanitizacao de HTML de anuncios com whitelist
+- whitelist de settings no admin
+- filtros e paginacao para usuarios/curriculos/logs
+- quality gate com lint + phpstan + smoke
 
 ## Backlog priorizado
 
-## P0 - Aplicar primeiro (alto impacto)
+## P0 - Alta prioridade
 
-### 1) Higiene de repositorio e segredos
+### 1) Integrar exibicao real de anuncios no catalog
 
 O que fazer:
 
-- Criar `.gitignore` para ignorar `system/storage/*`, `system/config/installed.php` e artefatos locais.
-- Remover do versionamento arquivos de sessao, logs e arquivos temporarios.
-- Manter apenas `system/config/installed.php.example` no Git.
+- consumir `ad_blocks` ativos nas views publicas (ex.: home)
+- respeitar flag `ads_enabled` em runtime
+- manter fallback limpo quando nao houver blocos ativos
 
 Beneficio:
 
-- Reduz risco de vazamento de credenciais e dados sensiveis.
+- conecta o modulo administrativo de anuncios ao frontend real
 
 Onde atuar:
 
-- `.gitignore` (novo arquivo)
-- `system/config/installed.php`
-- `system/storage/*`
-
-### 2) Hardening de sessao e autenticacao
-
-O que fazer:
-
-- Regenerar ID de sessao no login e logout.
-- Configurar cookie de sessao com `httponly`, `secure` (quando HTTPS), `samesite`.
-- Trocar `logout` e `theme/toggle` para POST com CSRF.
-- Validar `HTTP_REFERER` como same-origin antes de redirecionar.
-
-Beneficio:
-
-- Reduz risco de session fixation, CSRF e open redirect.
-
-Onde atuar:
-
-- `system/library/session.php`
-- `system/library/auth.php`
-- `catalog/controller/account/authcontroller.php`
-- `catalog/controller/common/themecontroller.php`
-- views com links de logout/toggle
-
-### 3) Recuperacao de senha completa e segura
-
-O que fazer:
-
-- Implementar fluxo completo: solicitar token -> enviar email -> redefinir senha -> invalidar token.
-- Remover token dos logs imediatamente.
-- Adicionar expiracao/uso unico validado por banco.
-
-Beneficio:
-
-- Fecha uma funcionalidade critica que hoje esta incompleta.
-
-Onde atuar:
-
-- `catalog/controller/account/authcontroller.php`
-- `catalog/model/usermodel.php`
-- novas rotas/view para reset
-- tabela `password_resets`
-
-### 4) Transacao unica ao salvar curriculo
-
-O que fazer:
-
-- Envolver `save()` de curriculo em `Database::transaction()`.
-- Garantir rollback em qualquer falha entre update principal, secoes e versao.
-
-Beneficio:
-
-- Evita inconsistencias e perda parcial de dados.
-
-Onde atuar:
-
-- `catalog/model/resumemodel.php`
-- `system/library/database.php`
-
-### 5) Corrigir estrategia de URL base
-
-O que fazer:
-
-- Fazer `base_url()` priorizar `app.base_url` de configuracao.
-- Manter fallback automatico apenas quando configuracao estiver ausente.
-
-Beneficio:
-
-- Evita links quebrados em proxy reverso/subdiretorios e torna instalador coerente.
-
-Onde atuar:
-
-- `system/helper/common.php`
-- `system/config/installed.php`
-- `install/model/installermodel.php`
-
-## P1 - Curto prazo (operacao e qualidade)
-
-### 6) Melhorar tratamento global de erro
-
-O que fazer:
-
-- Retornar status HTTP 500 em excecoes nao tratadas.
-- Exibir pagina de erro padronizada em vez de HTML inline.
-- Adicionar `request_id` no log para rastreabilidade.
-
-Onde atuar:
-
-- `system/engine/application.php`
-- `system/library/logger.php`
-
-### 7) Sanitizacao de HTML de anuncios
-
-O que fazer:
-
-- Substituir `strip_tags` simples por sanitizacao de atributos e protocolos permitidos.
-- Bloquear `javascript:` e atributos inline perigosos.
-
-Onde atuar:
-
+- `catalog/controller/common/homecontroller.php`
+- `catalog/model/admodel.php`
+- `catalog/model/settingmodel.php`
 - `catalog/view/common/home.php`
-- `admin/model/admodel.php`
 
-### 8) Validacao mais forte nas configuracoes
-
-O que fazer:
-
-- Trocar persistencia generica de `allPost()` por whitelist de chaves editaveis.
-- Validar URL de pagamento, imagem QR e limites de tamanho de texto.
-
-Onde atuar:
-
-- `admin/controller/setting/settingcontroller.php`
-- `admin/model/settingmodel.php`
-
-### 9) Paginacao e filtros no admin
+### 2) Editar/excluir templates e anuncios pela interface admin
 
 O que fazer:
 
-- Adicionar filtros por data/status e paginacao em usuarios, curriculos e logs.
+- adicionar acoes de editar/excluir na listagem
+- pre-preencher formulario para edicao
+- validar impacto de exclusao em registros referenciados
 
-Onde atuar:
+Beneficio:
 
-- `admin/model/usermodel.php`
-- `admin/model/resumemodel.php`
-- `admin/model/logmodel.php`
-- views admin
-
-### 10) Pipeline de qualidade (CI)
-
-O que fazer:
-
-- Adicionar testes de smoke para rotas principais.
-- Incluir analise estatica e lint de PHP.
-- Rodar tudo em CI a cada pull request.
-
-Onde atuar:
-
-- criar pasta `tests/`
-- `system/composer.json` (dev dependencies)
-- workflow CI (ex.: GitHub Actions)
-
-## P2 - Evolucao funcional
-
-### 11) CRUD administrativo completo
-
-O que fazer:
-
-- Permitir editar/excluir itens ja cadastrados em templates e anuncios.
-- Adicionar acoes de ativar/desativar sem reenvio manual de IDs.
+- fecha ciclo de CRUD no backoffice
 
 Onde atuar:
 
 - `admin/view/template/index.php`
 - `admin/view/ad/index.php`
-- controllers e models admin correspondentes
+- `admin/controller/template/templatecontroller.php`
+- `admin/controller/ad/adcontroller.php`
 
-### 12) UX de conta e seguranca do usuario
+### 3) Endurecer recuperacao de senha (entrega de email)
 
 O que fazer:
 
-- Exigir senha atual para trocar senha.
-- Adicionar confirmacao de nova senha.
-- Validar formato de URL em website/linkedin/github.
+- criar adaptador SMTP configuravel (sem depender apenas de `mail()`)
+- registrar falhas de entrega com contexto padronizado
+- opcional: fila simples para reenvio
+
+Beneficio:
+
+- reduz falhas operacionais no reset de senha
 
 Onde atuar:
 
-- `catalog/view/account/settings.php`
-- `catalog/controller/account/settingscontroller.php`
-- `catalog/model/usermodel.php`
+- `catalog/controller/account/authcontroller.php`
+- nova camada de servico de email em `system/library`
+- settings de transporte no admin
 
-### 13) Historico de versoes de curriculo para o usuario
+### 4) Expor historico de versoes para o usuario
 
 O que fazer:
 
-- Exibir `resume_versions` no painel.
-- Permitir comparacao e restauracao de versoes.
+- listar `resume_versions` no dashboard
+- permitir abrir snapshot historico
+- opcional: restaurar snapshot como versao atual
+
+Beneficio:
+
+- agrega valor real ao versionamento ja persistido
 
 Onde atuar:
 
 - `catalog/model/resumemodel.php`
-- novos controllers/views de versao
+- novos controllers/views de historico
 
-### 14) Limpeza de assets nao usados
+## P1 - Curto prazo
 
-O que fazer:
-
-- Revisar bibliotecas front-end grandes atualmente nao referenciadas diretamente.
-- Remover ou mover para pacote opcional o que nao for usado em runtime.
-
-Onde atuar:
-
-- `catalog/view/js/*`
-- `admin/js/*`
-
-### 15) Estrategia de migracoes de banco
+### 5) Fortalecer seguranca de conta
 
 O que fazer:
 
-- Introduzir migracoes versionadas em vez de depender apenas de `schema.sql`.
-- Criar rotina de upgrade para ambientes ja instalados.
+- exigir senha atual para alterar senha na conta
+- validar complexidade minima de nova senha
+- registrar evento de troca de senha
 
 Onde atuar:
 
-- novo modulo de migracoes
+- `catalog/controller/account/settingscontroller.php`
+- `catalog/model/usermodel.php`
+- `catalog/view/account/settings.php`
+
+### 6) Rate limit de autenticacao
+
+O que fazer:
+
+- limitar tentativas de login/forgot por IP + email
+- aplicar janela temporaria e mensagens genericas
+
+Onde atuar:
+
+- `catalog/controller/account/authcontroller.php`
+- `admin/controller/common/logincontroller.php`
+- tabela auxiliar de throttling ou uso de cache
+
+### 7) Cobertura de testes de dominio
+
+O que fazer:
+
+- adicionar testes de regressao para `ResumeModel` e `UserModel`
+- validar parser de secoes e regras de data
+
+Onde atuar:
+
+- criar `tests/unit/*`
+- bootstrap de testes com DB isolado
+
+## P2 - Medio prazo
+
+### 8) Migracoes versionadas de banco
+
+O que fazer:
+
+- introduzir mecanismo de migracao incremental
+- separar instalacao nova de upgrades em ambiente existente
+
+Onde atuar:
+
+- novo modulo de migracao
 - `install/sql/schema.sql`
-- documentacao em `docs/BANCO_DE_DADOS.md`
+- documentacao de upgrade em `docs/BANCO_DE_DADOS.md`
 
-## Sugestao de execucao por sprint
+### 9) API publica para integracoes
 
-Sprint 1:
+O que fazer:
 
-- Itens 1, 2, 3 e 4
+- expor endpoint autenticado para exportacao estruturada
+- versionamento de contrato e limite de taxa
 
-Sprint 2:
+Onde atuar:
 
-- Itens 5, 6, 7, 8 e 9
+- novos controllers/routes API
+- camada de autenticacao por token
 
-Sprint 3:
+## Criterio de pronto
 
-- Itens 10, 11, 12, 13, 14 e 15
+Cada item deve ser concluido com:
 
-## Criterio de pronto (geral)
-
-Cada item deve ser considerado concluido somente quando:
-
-- possuir validacao automatizada minima (teste ou checklist manual documentado)
-- possuir atualizacao de documentacao em `docs/`
-- possuir registro no `CHANGELOG.md`
+- validacao automatizada minima (teste ou smoke dedicado)
+- atualizacao da documentacao relevante (`README.md` e/ou `docs/*`)
+- registro no `CHANGELOG.md`

@@ -3,7 +3,7 @@
 ## Requisitos minimos
 
 - PHP 8.1+
-- extensoes: PDO, PDO MySQL, JSON, MBString
+- extensoes: `pdo`, `pdo_mysql`, `json`, `mbstring`, `dom`
 - MySQL/MariaDB
 - permissao de escrita em:
   - `system/storage`
@@ -12,6 +12,12 @@
   - `system/config`
   - `system/vendor`
   - `image/templates`
+
+Requisitos opcionais por feature:
+
+- PDF: Composer + dependencias em `system/vendor` (Dompdf)
+- DOCX: extensao PHP `zip` (`ZipArchive`)
+- recuperacao de senha por email: funcao `mail()` habilitada
 
 ## Preparacao
 
@@ -33,6 +39,7 @@
 - informa host, porta, banco, usuario e senha
 - opcao para criar banco automaticamente se nao existir
 - botao de teste valida conexao antes de seguir
+- exibicao de diagnostico da conexao (servidor, usuario autenticado e existencia do schema)
 
 ### Passo 3 - administrador inicial
 
@@ -42,9 +49,10 @@
 - confirmacao de senha
 
 Ao concluir:
+
 - cria schema (`install/sql/schema.sql`)
 - cria usuario admin
-- aplica seeds iniciais (templates, anuncios, settings)
+- aplica seeds iniciais (templates, anuncios e settings)
 - grava `system/config/installed.php`
 
 ## Acesso apos instalacao
@@ -52,9 +60,9 @@ Ao concluir:
 - catalogo: `http://seu-host/catalog/index.php`
 - admin: `http://seu-host/admin/index.php`
 
-## Dompdf (opcional, recomendado)
+## Dependencias de exportacao
 
-Para exportacao PDF real:
+### PDF (Dompdf)
 
 ```bash
 composer --working-dir=system install
@@ -62,10 +70,10 @@ composer --working-dir=system install
 
 Sem Dompdf, a exportacao PDF fica indisponivel.
 
-## DOCX
+### DOCX
 
 - a exportacao DOCX usa `ZipArchive`
-- se a extensao `zip` nao estiver habilitada no PHP, a exportacao DOCX fica indisponivel
+- se a extensao `zip` nao estiver habilitada, a exportacao DOCX fica indisponivel
 
 ## Troubleshooting rapido
 
@@ -83,9 +91,14 @@ Sem Dompdf, a exportacao PDF fica indisponivel.
 ### Sessao nao persiste
 
 - confirme permissao em `system/storage/sessions`
-- revise configuracao do PHP para uso de sessoes
+- revise configuracao de sessao no PHP
 
 ### PDF nao gera arquivo
 
 - execute `composer --working-dir=system install`
 - confirme se `system/vendor/autoload.php` existe
+
+### Recuperacao de senha nao envia email
+
+- valide se `mail()` esta habilitado no ambiente
+- confira logs em `system/storage/logs/app.log`

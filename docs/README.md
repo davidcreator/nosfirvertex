@@ -9,10 +9,10 @@ Esta pasta concentra a documentacao tecnica e funcional do projeto.
 - `ARQUITETURA.md`: desenho MVCL, bootstrap, roteamento e fluxo entre camadas.
 - `INSTALACAO.md`: instalacao passo a passo e troubleshooting.
 - `ROTAS.md`: mapa de rotas de catalogo, admin e instalador.
-- `BANCO_DE_DADOS.md`: estrutura de tabelas e relacoes principais.
+- `BANCO_DE_DADOS.md`: estrutura de tabelas, relacoes e seeds iniciais.
 - `OPERACAO_ADMIN.md`: uso do painel administrativo no dia a dia.
-- `FREATURES.md`: backlog priorizado de melhorias tecnicas e funcionais.
-- `QUALIDADE.md`: padrao de quality gate (lint, analise estatica e smoke).
+- `QUALIDADE.md`: quality gate local e CI.
+- `FREATURES.md`: roadmap tecnico e funcional priorizado (arquivo legado com nome original).
 
 ## Ordem sugerida de leitura
 
@@ -23,3 +23,4 @@ Esta pasta concentra a documentacao tecnica e funcional do projeto.
 5. `BANCO_DE_DADOS.md`
 6. `OPERACAO_ADMIN.md`
 7. `QUALIDADE.md`
+8. `FREATURES.md`

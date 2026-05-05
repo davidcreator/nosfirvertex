@@ -2,56 +2,57 @@
 
 ## Catalog (`catalog/config.php`)
 
-- `""` -> HomeController@index
-- `login` -> AuthController@login
-- `register` -> AuthController@register
-- `logout` -> AuthController@logout
-- `password/forgot` -> AuthController@forgot
-- `password/reset/{token}` -> AuthController@reset
-- `dashboard` -> DashboardController@index
-- `account/settings` -> SettingsController@index
-- `resume/create` -> ResumeController@create
-- `resume/edit/{id}` -> ResumeController@edit
-- `resume/view/{id}` -> ResumeController@view
-- `resume/delete/{id}` -> ResumeController@delete
-- `resume/export/pdf/{id}` -> ExportController@pdf
-- `resume/export/docx/{id}` -> ExportController@docx
-- `resume/export/browser/{id}` -> ExportController@browser
-- `resume/export/json/{id}` -> ExportController@json
-- `templates` -> TemplateController@index
-- `doacoes` -> DonationController@index
-- `theme/toggle` -> ThemeController@toggle
-- `404` -> ErrorController@notFound
+- `GET /` -> HomeController@index
+- `GET|POST login` -> AuthController@login
+- `GET|POST register` -> AuthController@register
+- `POST logout` -> AuthController@logout
+- `GET|POST password/forgot` -> AuthController@forgot
+- `GET|POST password/reset/{token}` -> AuthController@reset
+- `GET dashboard` -> DashboardController@index
+- `GET|POST account/settings` -> SettingsController@index
+- `GET|POST resume/create` -> ResumeController@create
+- `GET|POST resume/edit/{id}` -> ResumeController@edit
+- `GET resume/view/{id}` -> ResumeController@view
+- `POST resume/delete/{id}` -> ResumeController@delete
+- `GET resume/export/pdf/{id}` -> ExportController@pdf
+- `GET resume/export/docx/{id}` -> ExportController@docx
+- `GET resume/export/browser/{id}` -> ExportController@browser
+- `GET resume/export/json/{id}` -> ExportController@json
+- `GET templates` -> TemplateController@index
+- `GET doacoes` -> DonationController@index
+- `POST theme/toggle` -> ThemeController@toggle
+- `GET 404` -> ErrorController@notFound
 
 ## Admin (`admin/config.php`)
 
-- `""` -> DashboardController@index
-- `login` -> LoginController@index
-- `logout` -> LoginController@logout
-- `dashboard` -> DashboardController@index
-- `users` -> UserController@index
-- `resumes` -> ResumeController@index
-- `templates` -> TemplateController@index
-- `ads` -> AdController@index
-- `settings` -> SettingController@index
-- `logs` -> LogController@index
-- `404` -> DashboardController@notFound
+- `GET /` -> DashboardController@index
+- `GET|POST login` -> LoginController@index
+- `POST logout` -> LoginController@logout
+- `GET dashboard` -> DashboardController@index
+- `GET users` -> UserController@index
+- `GET resumes` -> ResumeController@index
+- `GET|POST templates` -> TemplateController@index
+- `GET|POST ads` -> AdController@index
+- `GET|POST settings` -> SettingController@index
+- `GET logs` -> LogController@index
+- `GET 404` -> DashboardController@notFound
 
 ## Install (`install/config.php`)
 
-- `""` -> InstallerController@index
-- `step/1` -> InstallerController@step1
-- `step/1/next` -> InstallerController@step1Next
-- `step/2` -> InstallerController@step2
-- `step/2/test-db` -> InstallerController@testDb
-- `step/2/next` -> InstallerController@step2Next
-- `step/3` -> InstallerController@step3
-- `run` -> InstallerController@run
-- `restart` -> InstallerController@restart
-- `404` -> InstallerController@notFound
+- `GET /` -> InstallerController@index
+- `GET step/1` -> InstallerController@step1
+- `POST step/1/next` -> InstallerController@step1Next
+- `GET step/2` -> InstallerController@step2
+- `POST step/2/test-db` -> InstallerController@testDb
+- `POST step/2/next` -> InstallerController@step2Next
+- `GET step/3` -> InstallerController@step3
+- `POST run` -> InstallerController@run
+- `GET restart` -> InstallerController@restart
+- `GET 404` -> InstallerController@notFound
 
 ## Observacoes
 
-- parametros dinamicos usam formato `{id}`
+- parametros dinamicos usam formato `{id}` / `{token}`
 - rotas podem ser chamadas por `?route=...`
 - quando rota nao existe, o fallback `404` da area e acionado
+- escrita sensivel (logout, toggle de tema, exclusao, instalacao) usa `POST + CSRF`

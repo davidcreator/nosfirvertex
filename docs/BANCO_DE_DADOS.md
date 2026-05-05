@@ -8,13 +8,13 @@ Arquivo de referencia do schema: `install/sql/schema.sql`.
 
 - `users`: contas de usuario/admin
 - `profiles`: dados complementares de perfil
-- `user_sessions`: sessao/token de usuario
-- `password_resets`: tokens de recuperacao de senha
+- `user_sessions`: estrutura para tokens de sessao persistidos
+- `password_resets`: tokens de recuperacao de senha com expiracao e uso unico
 
 ### Curriculos
 
 - `resumes`: cabecalho do curriculo
-- `resume_sections`: secoes em formato textual e metadados
+- `resume_sections`: secoes textuais e metadados
 - `resume_experiences`
 - `resume_educations`
 - `resume_courses`
@@ -29,7 +29,7 @@ Arquivo de referencia do schema: `install/sql/schema.sql`.
 
 - `templates`: modelos de curriculo
 - `settings`: configuracoes globais
-- `ad_blocks`: blocos de anuncios configuraveis
+- `ad_blocks`: blocos de anuncio configuraveis
 - `logs`: eventos registrados no sistema
 
 ## Relacoes relevantes
@@ -38,7 +38,7 @@ Arquivo de referencia do schema: `install/sql/schema.sql`.
 - `resumes.user_id` -> `users.user_id` (cascade delete)
 - `resumes.template_id` -> `templates.template_id` (set null)
 - tabelas `resume_*` -> `resumes.resume_id` (cascade delete)
-- `resume_versions.resume_id` -> `resumes.resume_id`
+- `resume_versions.resume_id` -> `resumes.resume_id` (cascade delete)
 - `user_sessions.user_id` -> `users.user_id` (set null)
 - `password_resets.user_id` -> `users.user_id` (cascade delete)
 
@@ -47,18 +47,28 @@ Arquivo de referencia do schema: `install/sql/schema.sql`.
 - `settings` usa chave unica (`key`) para feature flags e configuracoes de UI
 - personalizacao visual do curriculo e armazenada em `resume_sections` com `section_key = design_options` (JSON)
 - `resume_versions` guarda payload completo para trilha de alteracoes
-- anuncios usam indice por `position_code + is_active + display_order`
+- `ad_blocks` possui indice composto `position_code + is_active + display_order`
+- `logs.metadata` recebe contexto JSON (incluindo `request_id` quando disponivel)
 
 ## Seeds iniciais (instalador)
 
 No primeiro install, o sistema cria dados iniciais em:
+
 - templates padrao
-- anuncios padrao da home
-- settings basicas (incluindo configuracoes de doacao)
+- anuncios padrao
+- settings basicas
 
-## Chaves de configuracao de doacao
+## Chaves de configuracao conhecidas
 
-Configuradas em `settings`:
+Gerais:
+
+- `site_name`
+- `default_theme`
+- `allow_registration`
+- `ads_enabled`
+
+Doacoes:
+
 - `donation_enabled`
 - `donation_title`
 - `donation_message`
